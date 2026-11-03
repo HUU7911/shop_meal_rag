@@ -1,0 +1,10 @@
+[
+  {
+    "id": "faq-payment-001",
+    "category": "PAYMENT",
+    "question": "Shop Meal hỗ trợ những phương thức thanh toán nào?",
+    "keywords": ["thanh toán", "COD", "chuyển khoản"],
+    "answer": "[MẪU] Thay bằng nội dung thật từ nghiệp vụ.",
+    "enabled": true
+  }
+]

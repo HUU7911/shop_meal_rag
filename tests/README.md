@@ -1,0 +1,3 @@
+- `unit/`: không cần hạ tầng. Chạy: `make test`.
+- `integration/`: cần compose đang chạy. Chạy: `pytest -m integration`.
+- Đánh giá chất lượng RAG nằm ở `eval/`, không phải ở đây.

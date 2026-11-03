@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.idea/
+.vscode/
+data/processed/*
+!data/processed/.gitkeep
+data/products/*
+!data/products/.gitkeep
+*.log

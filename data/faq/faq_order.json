@@ -1,0 +1,18 @@
+[
+  {
+    "id": "faq-order-001",
+    "category": "ORDER",
+    "question": "Làm thế nào để đặt hàng trên Shop Meal?",
+    "keywords": ["đặt hàng", "mua", "đặt món"],
+    "answer": "[MẪU] Chọn món, thêm vào giỏ hàng, nhập địa chỉ và xác nhận thanh toán.",
+    "enabled": true
+  },
+  {
+    "id": "faq-order-002",
+    "category": "ORDER",
+    "question": "Làm thế nào để xem trạng thái đơn hàng?",
+    "keywords": ["trạng thái đơn", "theo dõi đơn"],
+    "answer": "[MẪU] Vào mục Đơn hàng của tôi để xem trạng thái. (Muốn hỏi đơn cụ thể, vui lòng đăng nhập.)",
+    "enabled": true
+  }
+]
