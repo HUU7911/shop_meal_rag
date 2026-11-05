@@ -51,6 +51,11 @@ class Settings(BaseSettings):
     rerank_enabled: bool = True
     rerank_model: str = "BAAI/bge-reranker-v2-m3"
 
+    # RAG
+    rag_enabled: bool = False                 # bật khi Qdrant/LLM/model đã sẵn sàng
+    context_max_tokens: int = 1800
+    support_contact: str = "bộ phận chăm sóc khách hàng của Shop Meal"
+
     # Retrieval
     retrieval_top_k: int = 8
     rerank_top_n: int = 4

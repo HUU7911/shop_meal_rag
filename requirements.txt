@@ -15,7 +15,8 @@ redis>=5.0
 
 # RAG
 qdrant-client>=1.12
-sentence-transformers>=3.0
+sentence-transformers>=3.0       # CrossEncoder (rerank) + embedding model không phải bge-m3
+FlagEmbedding>=1.2              # bge-m3: dense + sparse trong 1 lần encode (kiểm tra API theo version đã cài)
 langchain-text-splitters>=0.3     # chỉ dùng Text Splitter; không dùng LangChain để điều phối RAG (xem docs/DECISIONS.md)
 
 # Tùy chọn (bật khi cần)

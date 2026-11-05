@@ -1,278 +1,101 @@
+"""EmbeddingService DÙNG CHUNG cho rag (query) và ingestion (document).
 
+Hai backend, chọn theo tên model:
+  * "bge-m3"  -> FlagEmbedding.BGEM3FlagModel: dense + sparse trong 1 lần encode (hybrid).
+  * khác      -> sentence-transformers: chỉ dense (sparse rỗng => retriever tự dùng dense-only).
+                 Model họ e5 tự thêm tiền tố "query: " / "passage: " tại đây.
+
+Hiệu năng: encode là CPU-bound -> code async PHẢI gọi qua asyncio.to_thread (Retriever đã làm).
+Lưu ý: API của FlagEmbedding thay đổi giữa các version; nếu khởi tạo lỗi hãy đối chiếu tài liệu version đã cài.
 """
-EmbeddingService dùng chung cho RAG query và ingestion document.
+import logging
+from dataclasses import dataclass, field
 
-Models:
-- BAAI/bge-m3:
-    Dense vector + sparse lexical weights.
-- intfloat/multilingual-e5-large:
-    Dense vector; sparse vector để rỗng.
-
-Không khởi tạo model ở cấp module. Tạo một instance trong application lifespan
-và dùng chung cho ingestion và RAG.
-"""
-
-from dataclasses import dataclass
-import math
-
+from app.core.errors import ConfigurationError, EmbeddingError
 from app.embedding.text_normalizer import normalize_text
+
+log = logging.getLogger("app.embedding")
 
 
 @dataclass
 class EncodedText:
     dense: list[float]
-    sparse_indices: list[int]
-    sparse_values: list[float]
+    sparse_indices: list[int] = field(default_factory=list)
+    sparse_values: list[float] = field(default_factory=list)
+
+    @property
+    def has_sparse(self) -> bool:
+        return bool(self.sparse_indices)
 
 
 class EmbeddingService:
-    """Tạo embedding nhất quán cho query và document."""
+    def __init__(self, model_name: str, dim: int, device: str = "cpu", batch_size: int = 16,
+                 max_length: int = 512):
+        self.model_name, self.dim, self.device = model_name, dim, device
+        self.batch_size, self.max_length = batch_size, max_length
+        lowered = model_name.lower()
+        self._is_bge_m3 = "bge-m3" in lowered
+        self._is_e5 = "e5" in lowered
+        self._model = self._load()
+        self._check_dim()
 
-    BGE_M3 = "BAAI/bge-m3"
-    E5_LARGE = "intfloat/multilingual-e5-large"
+    # ---------- khởi tạo ----------
+    def _load(self):
+        try:
+            if self._is_bge_m3:
+                from FlagEmbedding import BGEM3FlagModel
+                use_fp16 = self.device != "cpu"
+                for kwargs in ({"devices": [self.device]}, {"device": self.device}, {}):
+                    try:
+                        return BGEM3FlagModel(self.model_name, use_fp16=use_fp16, **kwargs)
+                    except TypeError:       # khác chữ ký giữa các version
+                        continue
+                raise EmbeddingError("Không khởi tạo được BGEM3FlagModel (kiểm tra version FlagEmbedding)")
+            from sentence_transformers import SentenceTransformer
+            return SentenceTransformer(self.model_name, device=self.device)
+        except EmbeddingError:
+            raise
+        except Exception as exc:  # noqa: BLE001
+            raise EmbeddingError(f"Không nạp được embedding model '{self.model_name}': {exc}") from exc
 
-    def __init__(
-        self,
-        model_name: str,
-        dim: int,
-        device: str = "cpu",
-        batch_size: int = 8,
-        max_length: int = 512,
-    ):
-        if not isinstance(model_name, str) or not model_name.strip():
-            raise ValueError("model_name must be a non-empty string")
+    def _check_dim(self) -> None:
+        probe = self.embed_query("kiểm tra kích thước vector")
+        if len(probe.dense) != self.dim:
+            raise ConfigurationError(
+                f"EMBEDDING_DIM={self.dim} nhưng model '{self.model_name}' trả vector {len(probe.dense)} chiều")
 
-        if dim <= 0:
-            raise ValueError("dim must be greater than zero")
+    @property
+    def supports_sparse(self) -> bool:
+        return self._is_bge_m3
 
-        if batch_size <= 0:
-            raise ValueError("batch_size must be greater than zero")
-
-        if max_length <= 0:
-            raise ValueError("max_length must be greater than zero")
-
-        self.model_name = model_name.strip()
-        self.dim = dim
-        self.device = device
-        self.batch_size = batch_size
-        self.max_length = max_length
-
-        normalized_name = self.model_name.lower()
-
-        if normalized_name == self.BGE_M3.lower():
-            self.provider = "bge-m3"
-            self._init_bge_m3()
-
-        elif normalized_name == self.E5_LARGE.lower():
-            self.provider = "e5"
-            self._init_e5()
-
-        else:
-            raise ValueError(
-                f"Unsupported embedding model: {self.model_name}. "
-                f"Supported models: {self.BGE_M3}, {self.E5_LARGE}"
-            )
-
-    def _validate_device(self) -> None:
-        """Kiểm tra CUDA nếu người dùng yêu cầu chạy GPU."""
-        if self.device.startswith("cuda"):
-            import torch
-
-            if not torch.cuda.is_available():
-                raise RuntimeError(
-                    f"CUDA device '{self.device}' was requested, "
-                    "but CUDA is not available."
-                )
-
-    def _init_bge_m3(self) -> None:
-        """Khởi tạo BGE-M3 với dense và sparse output."""
-        self._validate_device()
-
-        from FlagEmbedding import BGEM3FlagModel
-
-        self._model = BGEM3FlagModel(
-            self.model_name,
-            use_fp16=self.device.startswith("cuda"),
-            devices=self.device,
-            batch_size=self.batch_size,
-            query_max_length=self.max_length,
-            passage_max_length=self.max_length,
-            return_dense=True,
-            return_sparse=True,
-        )
-
-        self._tokenizer = self._model.tokenizer
-
-    def _init_e5(self) -> None:
-        """Khởi tạo Multilingual E5."""
-        self._validate_device()
-
-        from sentence_transformers import SentenceTransformer
-
-        self._model = SentenceTransformer(
-            self.model_name,
-            device=self.device,
-        )
-        self._tokenizer = None
-
-    @staticmethod
-    def _validate_text(text: str) -> str:
-        if not isinstance(text, str):
-            raise TypeError("Input text must be a string")
-
-        normalized = normalize_text(text)
-
-        if not normalized:
-            raise ValueError("Input text must not be empty")
-
-        return normalized
-
-    def _normalize_texts(self, texts: list[str]) -> list[str]:
-        if not isinstance(texts, list):
-            raise TypeError("texts must be a list of strings")
-
-        return [self._validate_text(text) for text in texts]
-
-    def _encode_bge(
-        self,
-        texts: list[str],
-    ) -> list[EncodedText]:
-        """Encode BGE-M3 và chuyển lexical weights thành sparse vectors."""
-        output = self._model.encode(
-            texts,
-            batch_size=self.batch_size,
-            max_length=self.max_length,
-            return_dense=True,
-            return_sparse=True,
-            return_colbert_vecs=False,
-        )
-
-        dense_vectors = output["dense_vecs"]
-        lexical_weights = output["lexical_weights"]
-
-        if len(dense_vectors) != len(texts):
-            raise RuntimeError("BGE-M3 returned an invalid dense vector count")
-
-        if len(lexical_weights) != len(texts):
-            raise RuntimeError("BGE-M3 returned an invalid sparse vector count")
-
-        results: list[EncodedText] = []
-
-        for dense_vector, token_weights in zip(
-            dense_vectors,
-            lexical_weights,
-        ):
-            dense = [float(value) for value in dense_vector.tolist()]
-
-            if len(dense) != self.dim:
-                raise ValueError(
-                    f"Expected dense dimension {self.dim}, "
-                    f"received {len(dense)}"
-                )
-
-            # BGE-M3 trả token -> weight.
-            # Qdrant sparse vector cần integer index -> weight.
-            sparse_map: dict[int, float] = {}
-
-            for token_id, weight in token_weights.items():
-                # BGE-M3 lexical_weights sử dụng token ID dạng string,
-                # không phải token text.
-                try:
-                    token_id = int(token_id)
-                    weight = float(weight)
-                except (TypeError, ValueError):
-                    continue
-
-                if token_id < 0:
-                    continue
-
-                if not math.isfinite(weight) or weight <= 0:
-                    continue
-
-                sparse_map[token_id] = (
-                        sparse_map.get(token_id, 0.0) + weight
-                )
-
-            sparse_indices = sorted(sparse_map)
-            sparse_values = [
-                float(sparse_map[index])
-                for index in sparse_indices
-            ]
-
-            results.append(
-                EncodedText(
-                    dense=dense,
-                    sparse_indices=sparse_indices,
-                    sparse_values=sparse_values,
-                )
-            )
-
-        return results
-
-    def _encode_e5(
-        self,
-        texts: list[str],
-        is_query: bool,
-    ) -> list[EncodedText]:
-        """Encode E5 với prefix đúng cho query và passage."""
-        if is_query:
-            inputs = [f"query: {text}" for text in texts]
-        else:
-            inputs = [f"passage: {text}" for text in texts]
-
-        vectors = self._model.encode(
-            inputs,
-            batch_size=self.batch_size,
-            show_progress_bar=False,
-            convert_to_numpy=True,
-            normalize_embeddings=True,
-            device=self.device,
-        )
-
-        if len(vectors) != len(texts):
-            raise RuntimeError("E5 returned an invalid vector count")
-
-        results: list[EncodedText] = []
-
-        for vector in vectors:
-            dense = [float(value) for value in vector.tolist()]
-
-            if len(dense) != self.dim:
-                raise ValueError(
-                    f"Expected dense dimension {self.dim}, "
-                    f"received {len(dense)}"
-                )
-
-            results.append(
-                EncodedText(
-                    dense=dense,
-                    sparse_indices=[],
-                    sparse_values=[],
-                )
-            )
-
-        return results
-
+    # ---------- API ----------
     def embed_query(self, text: str) -> EncodedText:
-        """Embedding cho câu hỏi người dùng."""
-        normalized = self._validate_text(text)
-
-        if self.provider == "bge-m3":
-            return self._encode_bge([normalized])[0]
-
-        return self._encode_e5([normalized], is_query=True)[0]
+        return self._encode([self._prefix(text, "query: ")])[0]
 
     def embed_documents(self, texts: list[str]) -> list[EncodedText]:
-        """Embedding cho danh sách document/chunk."""
-        normalized_texts = self._normalize_texts(texts)
-
-        if not normalized_texts:
+        if not texts:
             return []
+        return self._encode([self._prefix(t, "passage: ") for t in texts])
 
-        if self.provider == "bge-m3":
-            return self._encode_bge(normalized_texts)
+    # ---------- nội bộ ----------
+    def _prefix(self, text: str, prefix: str) -> str:
+        text = normalize_text(text)
+        return prefix + text if self._is_e5 else text
 
-        return self._encode_e5(
-            normalized_texts,
-            is_query=False,
-        )
+    def _encode(self, texts: list[str]) -> list[EncodedText]:
+        try:
+            if self._is_bge_m3:
+                out = self._model.encode(texts, batch_size=self.batch_size, max_length=self.max_length,
+                                         return_dense=True, return_sparse=True, return_colbert_vecs=False)
+                result = []
+                for dense, weights in zip(out["dense_vecs"], out["lexical_weights"]):
+                    items = sorted((int(k), float(v)) for k, v in weights.items())
+                    result.append(EncodedText(
+                        dense=[float(x) for x in dense],
+                        sparse_indices=[k for k, _ in items],
+                        sparse_values=[v for _, v in items]))
+                return result
+            vectors = self._model.encode(texts, batch_size=self.batch_size, normalize_embeddings=True)
+            return [EncodedText(dense=[float(x) for x in v]) for v in vectors]
+        except Exception as exc:  # noqa: BLE001
+            raise EmbeddingError(f"Lỗi khi encode: {exc}") from exc

@@ -14,10 +14,16 @@ from app.core.middleware import RequestIdMiddleware
 async def lifespan(app: FastAPI):
     settings = get_settings()
     setup_logging(settings.log_level)
-    # TODO: khởi tạo engine MySQL, Redis, Qdrant client, EmbeddingService, Reranker, RAGEngine
-    #       -> gắn vào app.state; đóng ở phần sau yield.
-    app.state.rag_engine = None
+    # TODO(Member 01): khởi tạo engine MySQL, Redis -> app.state; đóng ở phần sau yield.
+    app.state.rag_engine, close_rag = None, None
+    if settings.rag_enabled:                       # Member 02: bật bằng RAG_ENABLED=true
+        from app.integrations.order_client import OrderClient
+        from app.integrations.product_client import ProductClient
+        from app.rag.factory import build_rag_engine
+        app.state.rag_engine, close_rag = await build_rag_engine(settings, ProductClient(), OrderClient())
     yield
+    if close_rag:
+        await close_rag()
 
 
 def create_app() -> FastAPI:
