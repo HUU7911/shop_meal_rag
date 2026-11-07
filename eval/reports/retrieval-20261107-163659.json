@@ -1,0 +1,219 @@
+{
+  "timestamp": "2026-11-07T16:36:59",
+  "mode": "retrieval",
+  "config": {
+    "embedding_model": "BAAI/bge-m3",
+    "hybrid": true,
+    "rerank": true,
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "top_k": 8,
+    "rerank_top_n": 4,
+    "threshold": 0.35,
+    "llm_model": ""
+  },
+  "metrics": {
+    "k": 4,
+    "n": 30,
+    "hit@4_pct": 50.0,
+    "mrr": 0.461,
+    "latency_ms_p50": 5926,
+    "misses": [
+      {
+        "id": "q001",
+        "rank": null,
+        "got": [
+          "privacy",
+          "cancellation",
+          "delivery",
+          "cancellation"
+        ],
+        "expected": [
+          "faq-order-001"
+        ]
+      },
+      {
+        "id": "q004",
+        "rank": null,
+        "got": [
+          "privacy",
+          "privacy",
+          "cancellation",
+          "cancellation"
+        ],
+        "expected": [
+          "faq-payment-001"
+        ]
+      },
+      {
+        "id": "q005",
+        "rank": null,
+        "got": [
+          "cancellation",
+          "privacy",
+          "privacy",
+          "privacy"
+        ],
+        "expected": [
+          "faq-payment-001"
+        ]
+      },
+      {
+        "id": "q006",
+        "rank": null,
+        "got": [
+          "privacy",
+          "delivery",
+          "delivery",
+          "privacy"
+        ],
+        "expected": [
+          "faq-order-002"
+        ]
+      },
+      {
+        "id": "q018",
+        "rank": null,
+        "got": [
+          "cancellation",
+          "privacy",
+          "privacy",
+          "privacy"
+        ],
+        "expected": [
+          "faq-payment-001"
+        ]
+      },
+      {
+        "id": "q020",
+        "rank": null,
+        "got": [
+          "privacy",
+          "delivery",
+          "privacy",
+          "cancellation"
+        ],
+        "expected": [
+          "faq-service-001"
+        ]
+      },
+      {
+        "id": "q021",
+        "rank": null,
+        "got": [
+          "privacy",
+          "delivery",
+          "cancellation",
+          "cancellation"
+        ],
+        "expected": [
+          "faq-support-002"
+        ]
+      },
+      {
+        "id": "q022",
+        "rank": null,
+        "got": [
+          "delivery",
+          "delivery",
+          "cancellation",
+          "privacy"
+        ],
+        "expected": [
+          "faq-menu-002"
+        ]
+      },
+      {
+        "id": "q023",
+        "rank": null,
+        "got": [
+          "privacy",
+          "delivery",
+          "delivery",
+          "privacy"
+        ],
+        "expected": [
+          "faq-support-005"
+        ]
+      },
+      {
+        "id": "q030",
+        "rank": null,
+        "got": [
+          "cancellation",
+          "cancellation",
+          "delivery",
+          "privacy"
+        ],
+        "expected": [
+          "faq-payment-002",
+          "faq-support-001"
+        ]
+      },
+      {
+        "id": "q032",
+        "rank": null,
+        "got": [
+          "cancellation",
+          "privacy",
+          "cancellation",
+          "delivery"
+        ],
+        "expected": [
+          "faq-service-002"
+        ]
+      },
+      {
+        "id": "q033",
+        "rank": null,
+        "got": [
+          "cancellation",
+          "cancellation",
+          "cancellation",
+          "cancellation"
+        ],
+        "expected": [
+          "faq-order-004"
+        ]
+      },
+      {
+        "id": "q034",
+        "rank": null,
+        "got": [
+          "privacy",
+          "privacy",
+          "delivery",
+          "cancellation"
+        ],
+        "expected": [
+          "faq-support-004"
+        ]
+      },
+      {
+        "id": "q040",
+        "rank": null,
+        "got": [
+          "delivery",
+          "privacy",
+          "delivery",
+          "delivery"
+        ],
+        "expected": [
+          "faq-support-003"
+        ]
+      },
+      {
+        "id": "q042",
+        "rank": null,
+        "got": [
+          "cancellation",
+          "delivery",
+          "privacy",
+          "cancellation"
+        ],
+        "expected": [
+          "faq-payment-002"
+        ]
+      }
+    ]
+  }
+}

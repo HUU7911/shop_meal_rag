@@ -99,6 +99,8 @@ services:
     volumes:
       - model_cache:/models
       - ./data:/app/data
+      - ./app:/app/app
+      - ./eval:/app/eval
     depends_on:
       qdrant: { condition: service_healthy }
       mysql: { condition: service_healthy }

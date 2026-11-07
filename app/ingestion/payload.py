@@ -54,9 +54,12 @@ class ChunkPayload:
     product_type: str | None = None
     status_snapshot: str | None = None
     price_snapshot: float | None = None
+    embed_text: str | None = None
 
     def to_dict(self) -> dict:
-        return {k: v for k, v in asdict(self).items() if v is not None}
+        d = {k: v for k, v in asdict(self).items() if v is not None}
+        d.pop("embed_text", None)
+        return d
 
 
 def now_iso() -> str:

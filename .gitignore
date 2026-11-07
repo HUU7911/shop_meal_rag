@@ -11,4 +11,6 @@ data/processed/*
 !data/processed/.gitkeep
 data/products/*
 !data/products/.gitkeep
+data/raw/*
+!data/raw/.gitkeep
 *.log

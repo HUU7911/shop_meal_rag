@@ -3,8 +3,80 @@
     "id": "faq-payment-001",
     "category": "PAYMENT",
     "question": "Shop Meal hỗ trợ những phương thức thanh toán nào?",
-    "keywords": ["thanh toán", "COD", "chuyển khoản"],
-    "answer": "[MẪU] Thay bằng nội dung thật từ nghiệp vụ.",
+    "keywords": [
+      "phương thức thanh toán",
+      "thanh toán bằng gì",
+      "thanh toán tiền mặt",
+      "trả bằng thẻ",
+      "thẻ tín dụng",
+      "chuyển khoản",
+      "ví điện tử",
+      "COD"
+    ],
+    "answer": "Để xem và chọn các phương thức thanh toán khả dụng tại Shop Meal:\n1. Truy cập trang web chính thức của Shop Meal.\n2. Chuyển đến mục 'Thanh toán' (hoặc tại bước thanh toán khi đặt món).\n3. Bạn có thể chọn các hình thức thanh toán được hỗ trợ bao gồm: Thẻ tín dụng/ghi nợ (Visa, Mastercard, JCB), Thẻ ATM nội địa, Ví điện tử hoặc Thanh toán tiền mặt khi nhận hàng (COD).\nNếu bạn có thêm câu hỏi hoặc gặp vướng mắc khi thanh toán, vui lòng liên hệ bộ phận hỗ trợ khách hàng của Shop Meal qua mục 'Liên hệ'.",
+    "enabled": true
+  },
+  {
+    "id": "faq-payment-002",
+    "category": "PAYMENT",
+    "question": "Tôi bị trừ tiền nhưng đơn hàng chưa tạo hoặc bị lỗi thanh toán thẻ thì phải làm sao?",
+    "keywords": [
+      "lỗi thanh toán",
+      "bị trừ tiền",
+      "thẻ bị từ chối",
+      "sự cố thanh toán",
+      "không thanh toán được",
+      "khiếu nại trừ tiền"
+    ],
+    "answer": "Khi gặp sự cố thanh toán (thẻ bị từ chối, tài khoản bị trừ tiền nhưng chưa thấy đơn), bạn thực hiện theo các bước sau:\n1. Truy cập trang web Shop Meal và đăng nhập vào tài khoản của bạn.\n2. Đi tới mục 'Thanh toán' hoặc 'Lịch sử giao dịch'.\n3. Xác định đơn hàng hoặc giao dịch liên quan đến sự cố thanh toán của bạn.\n4. Nhấp vào tùy chọn 'Báo cáo sự cố' tương ứng với giao dịch đó.\n5. Điền thông tin chi tiết về sự cố (mã giao dịch, ảnh chụp trừ tiền nếu có) và bấm gửi.\nĐội ngũ hỗ trợ của chúng tôi sẽ lập tức kiểm tra với cổng thanh toán/ngân hàng và phản hồi giải quyết cho bạn trong thời gian sớm nhất.",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-007",
+    "category": "PAYMENT",
+    "question": "Mã giảm giá / voucher khuyến mãi của tôi không áp dụng được hoặc báo lỗi khi thanh toán thì xử lý ra sao?",
+    "keywords": [
+      "mã giảm giá bị lỗi",
+      "voucher không dùng được",
+      "không áp dụng được mã",
+      "mã khuyến mãi hết hạn",
+      "lỗi nhập voucher",
+      "code giảm giá không chạy",
+      "áp mã không thành công"
+    ],
+    "answer": "Nếu gặp sự cố không thể áp dụng mã giảm giá khi thanh toán đơn hàng tại Shop Meal, bạn hãy kiểm tra theo các bước sau:\n1. Kiểm tra điều kiện áp dụng của mã voucher:\n- Giá trị đơn hàng tối thiểu: Kiểm tra tổng tiền món đã đạt mức tối thiểu yêu cầu chưa (không tính phí vận chuyển).\n- Hạn sử dụng và số lượng: Kiểm tra xem mã còn thời hạn hay đã hết lượt sử dụng trong ngày.\n- Giới hạn ngành hàng/chi nhánh: Một số mã chỉ áp dụng cho danh mục món nhất định hoặc một số chi nhánh cụ thể.\n- Phương thức thanh toán: Kiểm tra xem voucher có yêu cầu bắt buộc thanh toán qua thẻ hoặc ví điện tử hay không.\n2. Kiểm tra chính tả mã code: Đảm bảo viết hoa chính xác, không gõ thừa dấu cách ở đầu hoặc cuối mã.\n3. Khắc phục sự cố hệ thống: Nếu đáp ứng đủ điều kiện nhưng hệ thống vẫn báo lỗi, hãy chụp lại màn hình lỗi và gửi cho bộ phận CSKH qua live chat hoặc Hotline để được nhân viên hỗ trợ áp mã thủ công hoặc cấp voucher thay thế tương đương.",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-009",
+    "category": "PAYMENT",
+    "question": "Tôi có thể thanh toán kết hợp một nửa bằng tiền mặt và một nửa bằng chuyển khoản cho cùng một đơn hàng không?",
+    "keywords": [
+      "thanh toán kết hợp",
+      "vừa tiền mặt vừa chuyển khoản",
+      "chia đôi thanh toán",
+      "trả nửa tiền mặt nửa thẻ",
+      "thanh toán hai hình thức",
+      "kết hợp nhiều phương thức",
+      "trả tiền mặt lẫn banking"
+    ],
+    "answer": "Về việc thanh toán kết hợp nhiều hình thức cho một đơn hàng tại Shop Meal:\n1. Quy định trên hệ thống trực tuyến: Ứng dụng và website hiện tại chỉ hỗ trợ chọn duy nhất 01 phương thức thanh toán cho mỗi đơn hàng (hoặc thanh toán toàn bộ qua thẻ/ví điện tử, hoặc thanh toán tiền mặt COD khi nhận hàng).\n2. Trường hợp xử lý linh hoạt khi nhận hàng (đơn COD): Nếu bạn chọn thanh toán COD nhưng khi tài xế giao đến bạn không đủ tiền mặt:\n- Bạn có thể thương lượng chuyển khoản số tiền còn thiếu vào tài khoản ngân hàng cá nhân của tài xế (nếu tài xế đồng ý hỗ trợ nhận chuyển khoản hộ).\n- Tài xế sẽ là người chịu trách nhiệm nộp đầy đủ số tiền mặt của đơn hàng về cho hệ thống Shop Meal.\n3. Đối với hợp đồng tiệc Catering lớn: Khách hàng hoàn toàn có thể chia làm nhiều đợt thanh toán (đặt cọc trước 30-50% qua chuyển khoản doanh nghiệp và thanh toán phần còn lại bằng tiền mặt hoặc chuyển khoản sau tiệc).",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-015",
+    "category": "PAYMENT",
+    "question": "Tôi muốn tip (gửi tiền boa) thêm cho tài xế giao hàng thì có thực hiện qua ứng dụng được không?",
+    "keywords": [
+      "tip cho tài xế",
+      "tiền boa shipper",
+      "thưởng thêm cho tài xế",
+      "tip qua ứng dụng",
+      "boa tiền ship",
+      "cách tip cho shipper",
+      "gửi tiền boa online"
+    ],
+    "answer": "Quý khách hoàn toàn có thể tip (gửi tiền boa) để khích lệ tài xế giao hàng thông qua ứng dụng Shop Meal bằng các cách sau:\n1. Tip trực tiếp trên ứng dụng khi đánh giá đơn:\n- Sau khi tài xế giao hàng thành công, ứng dụng sẽ hiện màn hình 'Đánh giá đơn hàng & Tài xế'.\n- Tại mục đánh giá tài xế, bạn có thể chọn mức tiền tip gợi ý (ví dụ: 10.000đ, 20.000đ, 50.000đ) hoặc tự nhập số tiền tùy ý.\n- Bấm xác nhận để thanh toán tiền tip qua ví điện tử hoặc thẻ đã liên kết.\n2. Tip bằng tiền mặt trực tiếp: Bạn cũng có thể gửi tặng trực tiếp tiền mặt cho tài xế khi nhận đồ ăn.\n3. Cam kết chuyển trọn vẹn 100%: Toàn bộ 100% số tiền tip qua ứng dụng sẽ được chuyển thẳng vào ví thu nhập của tài xế mà Shop Meal không thu bất kỳ khoản chiết khấu hay phí dịch vụ nào.",
     "enabled": true
   }
 ]

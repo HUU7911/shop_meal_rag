@@ -1,0 +1,95 @@
+[
+  {
+    "id": "faq-support-001",
+    "category": "SUPPORT",
+    "question": "Làm thế nào để liên hệ với bộ phận chăm sóc khách hàng của Shop Meal?",
+    "keywords": [
+      "chăm sóc khách hàng",
+      "liên hệ CSKH",
+      "hỗ trợ khách hàng",
+      "số điện thoại hotline",
+      "gửi email hỗ trợ",
+      "tổng đài"
+    ],
+    "answer": "Để nhận được sự hỗ trợ từ bộ phận chăm sóc khách hàng của Shop Meal:\n1. Truy cập vào trang web Shop Meal.\n2. Di chuyển đến mục 'Liên hệ' (Contact Us) ở cuối trang hoặc thanh menu.\n3. Chọn phương thức liên hệ bạn muốn: gọi qua số Hotline hoặc gửi email hỗ trợ trực tiếp.\nĐể chúng tôi hỗ trợ bạn nhanh và chính xác nhất, vui lòng cung cấp thông tin chi tiết hoặc mã đơn hàng nếu có khi liên hệ.",
+    "enabled": true
+  },
+  {
+    "id": "faq-support-002",
+    "category": "SUPPORT",
+    "question": "Tôi muốn nói chuyện hoặc chat trực tiếp với nhân viên tư vấn thì làm thế nào?",
+    "keywords": [
+      "gặp nhân viên",
+      "nói chuyện với nhân viên",
+      "chat với nhân viên",
+      "gặp tư vấn viên",
+      "nhân viên hỗ trợ",
+      "gặp người thật",
+      "human agent"
+    ],
+    "answer": "Nếu bạn muốn kết nối trực tiếp với nhân viên tư vấn của Shop Meal:\n1. Truy cập website hoặc ứng dụng Shop Meal.\n2. Vào mục 'Liên hệ' trên menu chính.\n3. Bạn có thể gọi trực tiếp đến số điện thoại hotline chăm sóc khách hàng hiển thị trên trang để được gặp nhân viên hỗ trợ ngay.\n4. Hoặc chọn tính năng 'Chat trực tiếp' (Live Chat) và chọn 'Yêu cầu gặp nhân viên tư vấn'.\nChúng tôi luôn sẵn sàng lắng nghe và giải đáp mọi thắc mắc của bạn.",
+    "enabled": true
+  },
+  {
+    "id": "faq-support-003",
+    "category": "SUPPORT",
+    "question": "Làm thế nào để gửi khiếu nại về chất lượng dịch vụ hoặc thái độ phục vụ?",
+    "keywords": [
+      "khiếu nại",
+      "gửi khiếu nại",
+      "phản ánh dịch vụ",
+      "không hài lòng",
+      "thái độ nhân viên",
+      "chất lượng kém",
+      "khiếu nại dịch vụ"
+    ],
+    "answer": "Chúng tôi rất tiếc nếu bạn có trải nghiệm không hài lòng. Để gửi khiếu nại về chất lượng phục vụ tại Shop Meal:\n1. Truy cập website Shop Meal và vào mục 'Liên hệ' hoặc 'Hỗ trợ'.\n2. Chọn tùy chọn 'Gửi khiếu nại' (File a Complaint).\n3. Điền biểu mẫu khiếu nại bao gồm: Họ tên, số điện thoại liên hệ, mã đơn hàng (nếu có) và mô tả chi tiết sự việc bạn đã trải qua.\n4. Nhấn nút 'Gửi khiếu nại' để hoàn tất.\nÝ kiến đóng góp của bạn là vô cùng quan trọng. Đội ngũ quản lý sẽ tiếp nhận, xử lý khẩn cấp và liên hệ phản hồi trực tiếp cho bạn.",
+    "enabled": true
+  },
+  {
+    "id": "faq-support-004",
+    "category": "SUPPORT",
+    "question": "Làm thế nào để để lại đánh giá và nhận xét về món ăn sau khi dùng bữa?",
+    "keywords": [
+      "đánh giá món ăn",
+      "để lại nhận xét",
+      "viết review",
+      "chấm sao đơn hàng",
+      "đánh giá dịch vụ",
+      "feedback"
+    ],
+    "answer": "Để gửi đánh giá về trải nghiệm bữa ăn và dịch vụ của bạn:\n1. Truy cập website Shop Meal và đăng nhập vào tài khoản.\n2. Vào mục 'Đơn hàng của tôi' và chọn đơn hàng bạn vừa hoàn thành.\n3. Chọn mục 'Đánh giá món ăn' (Write a Review).\n4. Chọn số sao đánh giá, viết nhận xét chi tiết về hương vị món ăn, tốc độ giao hàng và có thể đính kèm hình ảnh thực tế.\n5. Bấm 'Gửi đánh giá'.\nNhững chia sẻ chân thành của bạn giúp Shop Meal không ngừng nâng cao chất lượng phục vụ.",
+    "enabled": true
+  },
+  {
+    "id": "faq-support-005",
+    "category": "SUPPORT",
+    "question": "Làm thế nào để tìm cửa hàng hoặc chi nhánh Shop Meal gần tôi nhất?",
+    "keywords": [
+      "tìm cửa hàng",
+      "chi nhánh gần nhất",
+      "địa chỉ quán",
+      "cửa hàng gần đây",
+      "đến quán ăn",
+      "vị trí nhà hàng"
+    ],
+    "answer": "Để xác định chi nhánh cửa hàng Shop Meal gần vị trí của bạn nhất:\n1. Truy cập trang web Shop Meal.\n2. Vào mục 'Hệ thống chi nhánh' (Locations) trên thanh điều hướng.\n3. Cho phép trình duyệt truy cập vị trí hiện tại hoặc nhập khu vực/quận bạn đang ở vào ô tìm kiếm.\n4. Nhấn 'Tìm kiếm' để xem danh sách các chi nhánh gần nhất kèm địa chỉ, giờ mở cửa và số điện thoại liên hệ.\nBạn có thể chọn chi nhánh thuận tiện nhất để đặt món hoặc ghé dùng bữa trực tiếp.",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-013",
+    "category": "SUPPORT",
+    "question": "Nếu thức ăn có vấn đề về vệ sinh an toàn thực phẩm (có dị vật, mùi lạ, nghi ngộ độc) thì Shop Meal xử lý ra sao?",
+    "keywords": [
+      "vệ sinh an toàn thực phẩm",
+      "thức ăn có dị vật",
+      "đồ ăn có mùi lạ",
+      "thức ăn bị thiu",
+      "ngộ độc thực phẩm",
+      "khiếu nại chất lượng món",
+      "thức ăn không đảm bảo"
+    ],
+    "answer": "Shop Meal cam kết đặt sức khỏe của khách hàng lên hàng đầu và có quy trình khẩn cấp xử lý các sự cố về an toàn vệ sinh thực phẩm:\n1. Giữ nguyên hiện trạng: Quý khách vui lòng ngừng sử dụng ngay món ăn, giữ lại hộp thức ăn cùng bao bì nguyên trạng và chụp ảnh/quay video cận cảnh phần dị vật hoặc dấu hiệu bất thường.\n2. Báo cáo khẩn cấp: Liên hệ ngay Hotline Chăm sóc khách hàng của Shop Meal hoặc chọn 'Báo cáo sự cố khẩn cấp' trên ứng dụng trong vòng 2 giờ kể từ khi nhận món.\n3. Quy trình tiếp nhận và giải quyết:\n- Thu hồi mẫu kiểm định: Đội ngũ chất lượng (QC) sẽ cử người đến tận nơi tiếp nhận mẫu thức ăn để kiểm nghiệm và truy xuất nguồn gốc nguyên liệu tại bếp.\n- Hoàn tiền 100%: Hoàn trả toàn bộ giá trị đơn hàng cho khách hàng ngay khi tiếp nhận phản ánh.\n- Chăm sóc và hỗ trợ y tế: Nếu khách hàng gặp vấn đề về sức khỏe (đau bụng, ngộ độc), Shop Meal cam kết chi trả toàn bộ chi phí khám chữa bệnh tại cơ sở y tế và đồng hành sát sao cho đến khi sức khỏe của quý khách hoàn toàn ổn định.",
+    "enabled": true
+  }
+]

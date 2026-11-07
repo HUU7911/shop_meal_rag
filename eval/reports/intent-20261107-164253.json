@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-11-07T16:42:53",
+  "mode": "intent",
+  "config": {
+    "embedding_model": "BAAI/bge-m3",
+    "hybrid": true,
+    "rerank": true,
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "top_k": 8,
+    "rerank_top_n": 4,
+    "threshold": 0.35,
+    "llm_model": ""
+  },
+  "metrics": {
+    "accuracy_pct": 100.0,
+    "n": 54,
+    "errors": []
+  }
+}

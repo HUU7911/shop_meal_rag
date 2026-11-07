@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-11-07T16:42:27",
+  "mode": "retrieval",
+  "config": {
+    "embedding_model": "BAAI/bge-m3",
+    "hybrid": true,
+    "rerank": true,
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "top_k": 8,
+    "rerank_top_n": 4,
+    "threshold": 0.35,
+    "llm_model": ""
+  },
+  "metrics": {
+    "k": 4,
+    "n": 30,
+    "hit@4_pct": 90.0,
+    "mrr": 0.797,
+    "latency_ms_p50": 6572,
+    "misses": [
+      {
+        "id": "q015",
+        "rank": null,
+        "got": [
+          "faq-service-001",
+          "faq-order-001",
+          "faq-order-002",
+          "faq-edge-003"
+        ],
+        "expected": [
+          "cancellation",
+          "faq-order-003"
+        ]
+      },
+      {
+        "id": "q020",
+        "rank": null,
+        "got": [
+          "privacy",
+          "faq-service-002",
+          "faq-order-003",
+          "faq-service-003"
+        ],
+        "expected": [
+          "faq-service-001"
+        ]
+      },
+      {
+        "id": "q021",
+        "rank": null,
+        "got": [
+          "faq-order-006",
+          "faq-edge-013",
+          "faq-edge-003",
+          "delivery"
+        ],
+        "expected": [
+          "faq-support-002"
+        ]
+      }
+    ]
+  }
+}

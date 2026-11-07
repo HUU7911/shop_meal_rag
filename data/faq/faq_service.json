@@ -1,0 +1,90 @@
+[
+  {
+    "id": "faq-service-001",
+    "category": "RESERVATIONS",
+    "question": "Làm thế nào để đặt bàn trước tại nhà hàng Shop Meal?",
+    "keywords": [
+      "đặt bàn",
+      "đặt chỗ",
+      "book bàn",
+      "đặt bàn trước",
+      "đặt bàn ăn tại quán",
+      "giữ chỗ"
+    ],
+    "answer": "Để đặt bàn dùng bữa tại nhà hàng Shop Meal:\n1. Truy cập trang web Shop Meal và nhấp vào mục 'Đặt bàn' (Reservations).\n2. Chọn ngày và giờ bạn muốn dùng bữa.\n3. Nhập số lượng khách đi cùng.\n4. Điền thông tin liên hệ và ghi chú yêu cầu đặc biệt (nếu có).\n5. Kiểm tra lại thông tin và bấm 'Xác nhận đặt bàn'.\nBạn sẽ nhận được tin nhắn hoặc email xác nhận đặt bàn thành công. Nếu cần hỗ trợ thêm, bạn có thể liên hệ bộ phận hỗ trợ khách hàng.",
+    "enabled": true
+  },
+  {
+    "id": "faq-service-002",
+    "category": "RESERVATIONS",
+    "question": "Tôi có thể thay đổi thời gian hoặc số lượng người trong lịch đặt bàn không?",
+    "keywords": [
+      "sửa lịch đặt bàn",
+      "đổi giờ đặt bàn",
+      "thêm người đặt bàn",
+      "chỉnh sửa đặt chỗ",
+      "thay đổi đặt bàn"
+    ],
+    "answer": "Để thay đổi thông tin lịch đặt bàn đã tạo:\n1. Truy cập website Shop Meal và vào mục 'Lịch đặt bàn của tôi'.\n2. Nhập mã đặt bàn và thông tin liên hệ của bạn.\n3. Chọn tùy chọn 'Chỉnh sửa đặt bàn' (Modify Reservation).\n4. Cập nhật các thay đổi mong muốn (như ngày, giờ mới hoặc số lượng khách).\n5. Xác nhận lưu các thay đổi và chờ thông báo cập nhật thành công.\nNếu giờ bạn muốn chuyển sang đã hết bàn, vui lòng liên hệ trực tiếp chi nhánh để được sắp xếp.",
+    "enabled": true
+  },
+  {
+    "id": "faq-service-003",
+    "category": "RESERVATIONS",
+    "question": "Làm thế nào để hủy lịch đặt bàn đã đặt trước?",
+    "keywords": [
+      "hủy đặt bàn",
+      "hủy bàn",
+      "không đến nữa",
+      "hủy giữ chỗ",
+      "cancel reservation"
+    ],
+    "answer": "Để hủy lịch đặt bàn trước tại chi nhánh Shop Meal:\n1. Đăng nhập vào tài khoản Shop Meal trên trang web.\n2. Vào mục 'Lịch đặt bàn của tôi'.\n3. Xác định lịch đặt bàn bạn muốn hủy và nhấp chọn.\n4. Nhấn vào nút 'Hủy đặt bàn' và xác nhận thao tác.\nChúng tôi khuyến khích bạn thông báo hủy bàn sớm ít nhất 1-2 tiếng để nhà hàng thuận tiện sắp xếp cho các khách hàng khác.",
+    "enabled": true
+  },
+  {
+    "id": "faq-service-004",
+    "category": "CATERING",
+    "question": "Shop Meal có nhận đặt tiệc catering cho công ty, sự kiện không và cách đặt ra sao?",
+    "keywords": [
+      "đặt tiệc",
+      "catering",
+      "tiệc công ty",
+      "đặt phần ăn sự kiện",
+      "đặt tiệc số lượng lớn",
+      "dịch vụ tiệc"
+    ],
+    "answer": "Shop Meal cung cấp dịch vụ đặt tiệc catering trọn gói cho hội họp, sinh nhật và sự kiện:\n1. Truy cập website Shop Meal và chọn mục 'Đặt tiệc & Sự kiện' (Catering).\n2. Lựa chọn gói thực đơn catering phù hợp với quy mô và yêu cầu của bạn.\n3. Chọn các món ăn số lượng lớn và thêm vào giỏ hàng tiệc.\n4. Điền thông tin chi tiết sự kiện: ngày, giờ tổ chức và địa chỉ sự kiện.\n5. Kiểm tra chi tiết và hoàn tất quy trình đặt tiệc.\nĐội ngũ tư vấn tiệc của Shop Meal sẽ liên hệ trực tiếp với bạn để xác nhận chi tiết thực đơn và hỗ trợ chu đáo nhất.",
+    "enabled": true
+  },
+  {
+    "id": "faq-service-005",
+    "category": "CATERING",
+    "question": "Làm thế nào để thay đổi hoặc hủy đơn tiệc catering đã đặt?",
+    "keywords": [
+      "hủy đặt tiệc",
+      "hủy catering",
+      "đổi món tiệc",
+      "thay đổi đơn tiệc",
+      "sửa thực đơn tiệc"
+    ],
+    "answer": "Để thay đổi hoặc hủy đơn tiệc catering:\n1. Đăng nhập vào tài khoản Shop Meal và vào mục 'Đặt tiệc & Sự kiện' > 'Đơn tiệc của tôi'.\n2. Chọn đơn tiệc cần điều chỉnh: chọn 'Chỉnh sửa đơn' để cập nhật số lượng phần ăn, hoặc chọn 'Hủy đơn tiệc' nếu bạn muốn hủy.\n3. Xác nhận các thay đổi trên hệ thống.\nLưu ý: Đối với đơn tiệc catering số lượng lớn, yêu cầu hủy hoặc đổi món cần thực hiện trước thời điểm diễn ra sự kiện theo thời hạn quy định trong Chính sách hủy tiệc để tránh phí chuẩn bị nguyên liệu.",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-008",
+    "category": "CATERING",
+    "question": "Khi đặt tiệc catering số lượng lớn cho công ty, Shop Meal có xuất hóa đơn đỏ (VAT) không và thủ tục thế nào?",
+    "keywords": [
+      "hóa đơn VAT catering",
+      "xuất hóa đơn đỏ",
+      "hóa đơn công ty",
+      "chứng từ đặt tiệc",
+      "hóa đơn điện tử VAT",
+      "đặt tiệc công ty hóa đơn",
+      "xuất VAT đơn lớn"
+    ],
+    "answer": "Shop Meal cung cấp đầy đủ hóa đơn giá trị gia tăng (VAT) điện tử hợp pháp cho tất cả các đơn đặt tiệc Catering và đơn hàng công ty số lượng lớn:\n1. Đăng ký xuất hóa đơn: Khi đặt tiệc trực tuyến hoặc ký hợp đồng catering, bạn chỉ cần tích chọn 'Yêu cầu xuất hóa đơn VAT' hoặc thông báo trực tiếp với chuyên viên tư vấn tiệc.\n2. Cung cấp thông tin doanh nghiệp: Cung cấp đầy đủ và chính xác thông tin pháp nhân gồm: Tên công ty đầy đủ, Mã số thuế (MST), Địa chỉ đăng ký kinh doanh và Địa chỉ email nhận hóa đơn điện tử.\n3. Hợp đồng và nghiệm thu: Với đơn tiệc lớn, Shop Meal cung cấp hợp đồng dịch vụ, bảng báo giá đóng dấu mộc và biên bản giao nhận/nghiệm thu thực đơn theo chuẩn kế toán hiện hành.\n4. Thời hạn gửi hóa đơn: Hóa đơn điện tử VAT sẽ được phát hành và tự động gửi qua email của quý công ty trong vòng 24 - 48 giờ làm việc sau khi đơn tiệc hoàn thành và quyết toán thành công.",
+    "enabled": true
+  }
+]

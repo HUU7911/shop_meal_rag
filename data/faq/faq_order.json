@@ -2,17 +2,234 @@
   {
     "id": "faq-order-001",
     "category": "ORDER",
-    "question": "Làm thế nào để đặt hàng trên Shop Meal?",
-    "keywords": ["đặt hàng", "mua", "đặt món"],
-    "answer": "[MẪU] Chọn món, thêm vào giỏ hàng, nhập địa chỉ và xác nhận thanh toán.",
+    "question": "Làm thế nào để đặt món ăn trực tuyến trên Shop Meal?",
+    "keywords": [
+      "đặt món",
+      "đặt hàng",
+      "order online",
+      "mua món",
+      "cách đặt món",
+      "đặt đồ ăn"
+    ],
+    "answer": "Để đặt món trực tuyến trên Shop Meal, bạn thực hiện theo các bước sau:\n1. Truy cập trang web chính thức của Shop Meal.\n2. Xem thực đơn và chọn các món ăn bạn muốn đặt.\n3. Thêm các món đã chọn vào giỏ hàng.\n4. Chuyển đến phần thanh toán (checkout).\n5. Nhập địa chỉ giao hàng và chọn phương thức thanh toán phù hợp.\n6. Kiểm tra lại thông tin đơn hàng để đảm bảo chính xác.\n7. Nhấn nút Xác nhận đặt hàng để hoàn tất.\nSau khi hoàn tất, đơn hàng sẽ được xử lý và bạn sẽ nhận được thông báo xác nhận cùng thời gian giao hàng dự kiến.",
     "enabled": true
   },
   {
     "id": "faq-order-002",
     "category": "ORDER",
-    "question": "Làm thế nào để xem trạng thái đơn hàng?",
-    "keywords": ["trạng thái đơn", "theo dõi đơn"],
-    "answer": "[MẪU] Vào mục Đơn hàng của tôi để xem trạng thái. (Muốn hỏi đơn cụ thể, vui lòng đăng nhập.)",
+    "question": "Làm thế nào để theo dõi và kiểm tra trạng thái đơn hàng của tôi?",
+    "keywords": [
+      "trạng thái đơn",
+      "theo dõi đơn",
+      "đơn hàng ở đâu",
+      "kiểm tra đơn",
+      "tra cứu đơn hàng",
+      "tiến độ giao hàng"
+    ],
+    "answer": "Để kiểm tra trạng thái hiện tại của đơn hàng, bạn làm theo các bước sau:\n1. Truy cập trang web hoặc ứng dụng Shop Meal.\n2. Đăng nhập vào tài khoản của bạn bằng tên đăng nhập và mật khẩu.\n3. Vào mục 'Đơn hàng của tôi'.\n4. Chọn đơn hàng cụ thể bạn muốn tra cứu.\n5. Trạng thái cập nhật mới nhất của đơn hàng sẽ hiển thị trực tiếp trên trang này.\nNếu cần thêm hỗ trợ, bạn vui lòng liên hệ bộ phận chăm sóc khách hàng của Shop Meal.",
+    "enabled": true
+  },
+  {
+    "id": "faq-order-003",
+    "category": "ORDER",
+    "question": "Tôi có thể hủy đơn hàng trực tuyến đã đặt không và làm như thế nào?",
+    "keywords": [
+      "hủy đơn",
+      "hủy đơn hàng",
+      "cancel order",
+      "không nhận đơn",
+      "hủy món đã đặt",
+      "đổi ý không mua"
+    ],
+    "answer": "Để hủy đơn hàng trực tuyến, bạn thực hiện theo các chỉ dẫn sau:\n1. Đăng nhập vào tài khoản của bạn trên Shop Meal.\n2. Vào mục 'Đơn hàng của tôi'.\n3. Tìm và chọn đơn hàng bạn muốn hủy.\n4. Nhấn vào nút 'Hủy đơn hàng' và xác nhận yêu cầu hủy.\nLưu ý: Bạn chỉ có thể hủy đơn khi cửa hàng chưa xác nhận chế biến. Nếu gặp bất kỳ khó khăn nào trong quá trình thực hiện, vui lòng liên hệ ngay với bộ phận chăm sóc khách hàng để được hỗ trợ.",
+    "enabled": true
+  },
+  {
+    "id": "faq-order-004",
+    "category": "ORDER",
+    "question": "Làm thế nào để thay đổi hoặc xóa bớt món trong đơn hàng đã đặt?",
+    "keywords": [
+      "thay đổi đơn",
+      "sửa đơn hàng",
+      "xóa món",
+      "bỏ bớt món",
+      "thêm món vào đơn",
+      "chỉnh sửa đơn"
+    ],
+    "answer": "Để chỉnh sửa hoặc xóa bớt món trong đơn hàng trực tuyến:\n1. Truy cập tài khoản của bạn trên Shop Meal.\n2. Vào mục 'Đơn hàng của tôi'.\n3. Chọn đơn hàng cụ thể mà bạn muốn chỉnh sửa.\n4. Tìm món ăn bạn muốn xóa bỏ hoặc thay đổi và chọn vào món đó.\n5. Xác nhận thao tác xóa hoặc thay đổi và lưu lại các điều chỉnh.\nLưu ý: Thao tác này chỉ áp dụng khi đơn hàng chưa vào giai đoạn chế biến. Nếu gặp khó khăn, hãy liên hệ hỗ trợ khách hàng để được can thiệp kịp thời.",
+    "enabled": true
+  },
+  {
+    "id": "faq-order-005",
+    "category": "ORDER",
+    "question": "Làm sao để biết thời gian giao hàng dự kiến của đơn hàng?",
+    "keywords": [
+      "thời gian giao hàng",
+      "bao lâu thì có",
+      "khi nào giao tới",
+      "mấy giờ giao",
+      "giao hàng bao lâu",
+      "thời gian nhận hàng"
+    ],
+    "answer": "Để kiểm tra thời gian giao hàng ước tính cho đơn hàng gần đây của bạn:\n1. Truy cập website Shop Meal và đăng nhập vào tài khoản.\n2. Đi đến mục 'Đơn hàng của tôi' hoặc 'Thời gian giao hàng'.\n3. Chọn đơn hàng mới nhất của bạn trong danh sách.\n4. Xem thời gian giao hàng dự kiến được hiển thị chi tiết cho đơn hàng đó.\nNếu có thắc mắc thêm về tiến độ giao hàng, bạn có thể liên hệ trực tiếp với bộ phận chăm sóc khách hàng.",
+    "enabled": true
+  },
+  {
+    "id": "faq-order-006",
+    "category": "ORDER",
+    "question": "Nếu đơn hàng gặp sự cố (giao trễ, đồ ăn nguội, thiếu món), tôi cần báo cho ai?",
+    "keywords": [
+      "sự cố đơn hàng",
+      "chưa nhận được hàng",
+      "đồ ăn bị nguội",
+      "giao thiếu món",
+      "giao sai món",
+      "khiếu nại đơn hàng"
+    ],
+    "answer": "Nếu đơn hàng gặp vấn đề (chưa được giao, giao sai hoặc đồ ăn bị nguội), bạn báo cáo sự cố theo các bước sau:\n1. Truy cập Shop Meal và vào mục 'Đơn hàng của tôi'.\n2. Chọn đúng đơn hàng đang gặp sự cố.\n3. Chọn tính năng 'Báo cáo sự cố' (Report Issue) và chọn loại vấn đề (ví dụ: 'Đơn chưa được giao', 'Giao thiếu món', 'Thức ăn không đảm bảo').\n4. Nhập mô tả chi tiết về sự cố bạn gặp phải và bấm gửi báo cáo.\nĐội ngũ Shop Meal sẽ nhanh chóng kiểm tra và xử lý phản hồi để hỗ trợ bạn ngay lập tức.",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-001",
+    "category": "ORDER",
+    "question": "Tôi lỡ đặt nhầm địa chỉ giao hàng trên đơn hàng thì phải làm sao để thay đổi?",
+    "keywords": [
+      "đổi địa chỉ giao hàng",
+      "sửa địa chỉ nhận hàng",
+      "đặt nhầm địa chỉ",
+      "giao sai địa chỉ",
+      "chỉnh sửa địa chỉ đơn",
+      "nhập sai vị trí giao"
+    ],
+    "answer": "Để xử lý khi đặt nhầm địa chỉ nhận hàng, bạn hãy làm theo các bước sau:\n1. Kiểm tra trạng thái đơn hàng trong mục 'Đơn hàng của tôi'.\n2. Nếu quán chưa xác nhận chế biến (thường trong 3-5 phút đầu): Bạn có thể nhấn 'Hủy đơn hàng' trực tiếp và tiến hành tạo đơn mới với địa chỉ chính xác.\n3. Nếu đơn đã được chế biến hoặc tài xế đang giao: Bạn không thể tự sửa địa chỉ trên hệ thống. Hãy nhấn ngay nút 'Gọi tài xế' trên ứng dụng hoặc liên hệ Hotline CSKH Shop Meal để báo lại địa chỉ mới.\n4. Thỏa thuận giao hàng: Nếu địa chỉ mới gần (dưới 1km), tài xế sẽ hỗ trợ giao đến nơi. Nếu khoảng cách xa hơn, bạn vui lòng hỗ trợ thêm phụ phí giao hàng phát sinh (5.000 VNĐ/km) cho tài xế.",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-002",
+    "category": "DELIVERY",
+    "question": "Tài xế đến nơi nhưng không gọi được cho khách (gọi 3 lần không nghe máy) thì đơn hàng xử lý thế nào?",
+    "keywords": [
+      "tài xế không gọi được",
+      "khách không nghe máy",
+      "không liên lạc được",
+      "gọi nhỡ tài xế",
+      "tài xế chờ bao lâu",
+      "hủy đơn do không nghe máy",
+      "không nhận được món"
+    ],
+    "answer": "Quy trình xử lý của Shop Meal khi tài xế không thể liên lạc được với khách hàng tại điểm giao:\n1. Thời gian chờ tối đa: Tài xế sẽ nỗ lực gọi tối thiểu 3 cuộc điện thoại và gửi tin nhắn trong khoảng thời gian chờ tiêu chuẩn từ 10 đến 15 phút.\n2. Báo cáo về hệ thống: Sau 15 phút không liên lạc được, tài xế sẽ chụp ảnh bằng chứng đã đến địa chỉ và báo sự cố 'Không liên lạc được người nhận' về tổng đài CSKH.\n3. Xử lý đơn hàng:\n- Đối với đơn thanh toán trước (thẻ/ví): Đơn hàng sẽ bị hủy. Do món ăn đã chế biến và giao đến nơi, tiền thanh toán sẽ không được hoàn lại theo chính sách hủy đơn.\n- Đối với đơn COD (tiền mặt): Đơn hàng bị hủy hoàn tất và tài khoản của bạn có thể bị giới hạn phương thức thanh toán tiền mặt cho các lần đặt sau.\n4. Trường hợp bạn phát hiện cuộc gọi nhỡ: Vui lòng gọi lại ngay cho tài xế theo số hiển thị trên ứng dụng hoặc liên hệ tổng đài để kiểm tra xem tài xế có còn ở khu vực đó không.",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-003",
+    "category": "DELIVERY",
+    "question": "Đơn hàng bị giao trễ hơn 45 phút so với thời gian cam kết, quán có chính sách bồi thường gì không?",
+    "keywords": [
+      "giao trễ hơn 45 phút",
+      "giao hàng quá muộn",
+      "đơn trễ bồi thường gì",
+      "khiếu nại giao trễ",
+      "giao trễ có voucher không",
+      "bồi thường đơn trễ",
+      "chờ món quá lâu"
+    ],
+    "answer": "Shop Meal cam kết giao món trong 30-45 phút kể từ khi xác nhận. Nếu đơn hàng giao trễ hơn 45 phút so với thời gian dự kiến hiển thị trên hệ thống:\n1. Miễn trừ trách nhiệm bất khả kháng: Nếu việc trễ do thời tiết mưa bão ngập lụt nghiêm trọng hoặc tai nạn giao thông bất khả kháng, hệ thống sẽ thông báo kéo dài thời gian và mong bạn thông cảm.\n2. Chính sách bồi hoàn nếu trễ do lỗi chủ quan của quán/tài xế:\n- Giao trễ từ 30 - 45 phút: Tặng ngay voucher giảm giá 20.000 - 50.000 VNĐ cho đơn hàng kế tiếp.\n- Giao trễ trên 45 phút hoặc món ăn nguội lạnh không dùng được: Quý khách có quyền từ chối nhận hàng và được hoàn tiền 100%, hoặc nhận món kèm voucher bồi thường 50% giá trị đơn hàng.\n3. Các bước nhận bồi thường: Vào 'Đơn hàng của tôi' > Chọn đơn hàng > Bấm 'Báo cáo sự cố' > Chọn 'Giao trễ nghiêm trọng' hoặc gọi Hotline để CSKH kiểm tra định vị và gửi voucher vào tài khoản của bạn.",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-004",
+    "category": "ORDER",
+    "question": "Khi nhận đồ ăn mà bị thiếu tương ớt, nước sốt hoặc dụng cụ ăn uống (thìa, đũa) thì phải làm sao?",
+    "keywords": [
+      "thiếu thìa đũa",
+      "thiếu tương ớt",
+      "không có muỗng nĩa",
+      "quên gia vị",
+      "thiếu nước chấm",
+      "thiếu dụng cụ ăn uống",
+      "quán quên bỏ đũa"
+    ],
+    "answer": "Để xử lý sự cố đơn hàng bị thiếu nước sốt hoặc dụng cụ ăn uống đi kèm, bạn thực hiện theo các bước sau:\n1. Kiểm tra tùy chọn dụng cụ: Để bảo vệ môi trường, hệ thống mặc định tắt tùy chọn lấy dụng cụ nhựa dùng một lần. Vui lòng kiểm tra lại đơn hàng xem bạn đã tích chọn 'Lấy dụng cụ ăn uống' hay chưa.\n2. Báo cáo sự cố: Nếu bạn đã chọn lấy dụng cụ/ghi chú gia vị nhưng quán bỏ quên, hãy vào 'Đơn hàng của tôi' > chọn 'Báo cáo sự cố' > chọn lý do 'Thiếu phụ kiện/gia vị'.\n3. Phương án giải quyết từ Shop Meal:\n- Giao bổ sung cấp tốc: Nếu địa chỉ nhận cách quán dưới 2km, Shop Meal sẽ cử shipper giao bổ sung gia vị hoặc dụng cụ ngay lập tức (hoàn toàn miễn phí).\n- Tặng voucher đền bù: Nếu bạn không thể chờ giao bổ sung hoặc khoảng cách xa, hệ thống sẽ gửi tặng bạn voucher ưu đãi 20.000 VNĐ vào ví tài khoản cho lần đặt tiếp theo cùng lời xin lỗi từ nhà hàng.",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-005",
+    "category": "ORDER",
+    "question": "Món ăn bị quá cay hoặc quán quên không đọc ghi chú 'không hành' của tôi thì xử lý thế nào?",
+    "keywords": [
+      "sai ghi chú",
+      "quên dặn không hành",
+      "món ăn quá cay",
+      "làm sai dặn dò",
+      "dặn không cay mà cay",
+      "quán không đọc ghi chú",
+      "đồ ăn sai yêu cầu"
+    ],
+    "answer": "Trường hợp quán chế biến sai ghi chú đặc biệt của bạn (ví dụ: đã dặn không hành hoặc không cay nhưng món ăn vẫn có):\n1. Chụp hình ảnh thực tế: Bạn vui lòng chụp lại ảnh món ăn thấy rõ phần vi phạm ghi chú (có hành/ớt) cùng với phiếu hóa đơn dán trên bao bì có in dòng ghi chú của bạn.\n2. Gửi phản hồi sự cố: Mở ứng dụng Shop Meal > Vào 'Đơn hàng của tôi' > Chọn đơn hàng > Nhấn 'Báo cáo sự cố' > Chọn mục 'Món ăn không đúng yêu cầu/ghi chú' và đính kèm hình ảnh.\n3. Phương án xử lý nhanh từ Shop Meal:\n- Nấu lại và giao mới: Quán sẽ lập tức chuẩn bị một phần ăn mới đúng chính xác yêu cầu của bạn và giao hỏa tốc đến nơi (hoàn toàn miễn phí).\n- Hoàn tiền món ăn: Nếu bạn không thể chờ giao lại, Shop Meal sẽ tiến hành hoàn tiền 100% giá trị của món ăn bị làm sai về phương thức thanh toán ban đầu của bạn.",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-010",
+    "category": "ORDER",
+    "question": "Tôi có thể đặt món trước từ sáng để giao đúng khung giờ trưa/tối hoặc hẹn ngày giao trước không?",
+    "keywords": [
+      "đặt món trước",
+      "hẹn giờ giao đồ ăn",
+      "đặt lịch giao trước",
+      "đặt cơm trưa sớm",
+      "lên lịch nhận món",
+      "đặt đồ ăn trước vài tiếng",
+      "chọn giờ giao hàng"
+    ],
+    "answer": "Shop Meal có tính năng 'Đặt lịch hẹn giờ' (Scheduled Order) cho phép bạn chủ động lên kế hoạch bữa ăn:\n1. Chọn món vào giỏ hàng: Chọn các món bạn muốn thưởng thức trên thực đơn trực tuyến như thông thường.\n2. Chuyển sang chế độ hẹn giờ: Tại trang thanh toán, ở mục 'Thời gian nhận món', bạn chuyển từ 'Giao ngay' sang 'Đặt lịch hẹn giờ'.\n3. Chọn ngày và khung giờ mong muốn:\n- Bạn có thể đặt trước từ 2 giờ đến tối đa 3 ngày so với thời điểm hiện tại.\n- Chọn khung giờ giao nhận phù hợp (ví dụ: 11:30 - 12:00 cho bữa trưa, hoặc 18:30 - 19:00 cho bữa tối).\n4. Quy trình chế biến: Đơn hàng sẽ được chuyển vào hàng đợi. Bếp chỉ bắt đầu chế biến trước giờ giao khoảng 20-30 phút để bảo đảm món ăn luôn nóng sốt, thơm ngon khi tài xế giao đến tay bạn đúng giờ.",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-011",
+    "category": "ORDER",
+    "question": "Đơn hàng phải đạt giá trị tối thiểu bao nhiêu tiền thì Shop Meal mới nhận giao hàng tận nơi?",
+    "keywords": [
+      "đơn hàng tối thiểu",
+      "giá trị đơn tối thiểu",
+      "ít tiền có giao không",
+      "giới hạn đơn tối thiểu",
+      "đặt bao nhiêu thì giao",
+      "đơn tối thiểu bao nhiêu tiền",
+      "đặt một món có ship không"
+    ],
+    "answer": "Chính sách về giá trị đơn hàng tối thiểu tại Shop Meal được quy định như sau:\n1. Đơn hàng giao đồ ăn thông thường: Shop Meal KHÔNG giới hạn giá trị đơn hàng tối thiểu. Quý khách hoàn toàn có thể đặt chỉ 1 món ăn hoặc đồ uống có giá trị nhỏ (kể cả dưới 30.000 VNĐ), chúng tôi vẫn nhận giao tận nơi.\n2. Chi phí giao hàng: Với đơn hàng nhỏ, quý khách chỉ cần thanh toán tiền món và phí vận chuyển tiêu chuẩn theo khoảng cách (từ 15.000 VNĐ cho khoảng cách dưới 3km).\n3. Điều kiện áp dụng ưu đãi Freeship: Trường hợp quý khách muốn áp dụng các mã miễn phí vận chuyển hoặc khuyến mại giảm giá, đơn hàng cần đạt giá trị tối thiểu theo quy định của từng chương trình cụ thể (thường từ 80.000 VNĐ trở lên).\n4. Đơn đặt tiệc Catering: Riêng dịch vụ đặt tiệc catering số lượng lớn có nhân viên phục vụ tận nơi, giá trị đơn hàng tối thiểu là 1.500.000 VNĐ.",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-012",
+    "category": "DELIVERY",
+    "question": "Khi nhận hàng thanh toán tiền mặt (COD), tôi có được mở hộp kiểm tra đồ ăn trước khi trả tiền không?",
+    "keywords": [
+      "đồng kiểm đồ ăn",
+      "kiểm tra hàng trước khi trả tiền",
+      "mở hộp kiểm tra COD",
+      "xem đồ ăn trước khi nhận",
+      "kiểm tra trước thanh toán",
+      "quy định đồng kiểm",
+      "có được xem hàng không"
+    ],
+    "answer": "Quy định về việc kiểm tra hàng hóa khi nhận từ tài xế tại Shop Meal như sau:\n1. Kiểm tra bên ngoài bao bì (Được phép): Quý khách hoàn toàn được quyền kiểm tra số lượng túi/hộp, hóa đơn bán hàng đính kèm và tem niêm phong vệ sinh (seal) dán trên túi hàng trước khi thanh toán tiền mặt cho tài xế.\n2. Mở nắp hộp đồ ăn (Không áp dụng trước khi trả tiền): Nhằm tuân thủ quy chuẩn vệ sinh an toàn thực phẩm và giữ nhiệt cho món ăn, tài xế không được phép mở nắp hoặc xé rách tem niêm phong của từng hộp thức ăn trước khi khách thanh toán.\n3. Chính sách bảo vệ sau khi thanh toán: Ngay sau khi thanh toán và nhận túi hàng, quý khách hãy mở hộp kiểm tra món ăn. Nếu phát hiện sai món, thiếu món, đổ vỡ hoặc thức ăn có vấn đề chất lượng, quý khách chỉ cần chụp ảnh và liên hệ ngay Hotline hoặc chọn 'Báo cáo sự cố' trên app. Shop Meal cam kết giao bổ sung miễn phí hoặc hoàn tiền 100% ngay lập tức.",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-014",
+    "category": "ORDER",
+    "question": "Tôi có thể đặt cùng lúc nhiều đơn hàng giao đến các địa chỉ khác nhau trên một tài khoản không?",
+    "keywords": [
+      "đặt nhiều đơn cùng lúc",
+      "giao nhiều địa chỉ khác nhau",
+      "đặt nhiều nơi một lúc",
+      "đặt đơn hàng song song",
+      "tạo nhiều đơn cùng tài khoản",
+      "giao cho nhiều người",
+      "đặt đồ ăn nhiều địa chỉ"
+    ],
+    "answer": "Bạn hoàn toàn có thể đặt cùng lúc nhiều đơn hàng giao đến các địa chỉ khác nhau trên cùng một tài khoản Shop Meal theo hướng dẫn sau:\n1. Nguyên tắc đơn hàng: Mỗi đơn hàng chỉ áp dụng cho một địa chỉ giao hàng và một tài xế phụ trách để tối ưu hóa thời gian vận chuyển nhanh nhất.\n2. Cách đặt nhiều đơn liên tiếp:\n- Bước 1: Chọn món cho địa chỉ thứ nhất, vào giỏ hàng, nhập địa chỉ nhận hàng thứ nhất và nhấn 'Xác nhận đặt hàng'.\n- Bước 2: Sau khi đơn hàng thứ nhất được xác nhận thành công, bạn quay lại trang 'Thực đơn' và chọn tiếp các món cho địa chỉ thứ hai.\n- Bước 3: Vào giỏ hàng mới, nhập địa chỉ nhận hàng thứ hai, chọn hình thức thanh toán và tiến hành đặt hàng.\n3. Theo dõi độc lập: Cả hai đơn hàng sẽ được điều phối song song. Bạn có thể vào mục 'Đơn hàng của tôi' để theo dõi tiến độ, lộ trình và số điện thoại của từng tài xế cho từng đơn hàng tương ứng.",
     "enabled": true
   }
 ]

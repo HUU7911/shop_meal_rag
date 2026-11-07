@@ -28,6 +28,7 @@ def build_filter(content_types: list[str] | None, category: str | None = None,
         models.FieldCondition(key="enabled", match=models.MatchValue(value=True)),
         models.Filter(should=[
             models.IsNullCondition(is_null=models.PayloadField(key="effective_date")),
+            models.IsEmptyCondition(is_empty=models.PayloadField(key="effective_date")),
             models.FieldCondition(key="effective_date", range=models.DatetimeRange(lte=now)),
         ]),
     ]

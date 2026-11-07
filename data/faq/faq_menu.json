@@ -1,0 +1,66 @@
+[
+  {
+    "id": "faq-menu-001",
+    "category": "MENU",
+    "question": "Làm thế nào để xem thực đơn hôm nay và danh sách các món ăn?",
+    "keywords": [
+      "xem menu",
+      "thực đơn hôm nay",
+      "danh sách món",
+      "có những món gì",
+      "menu quán",
+      "món đặc biệt"
+    ],
+    "answer": "Để xem thực đơn hôm nay của Shop Meal, bạn làm theo hướng dẫn sau:\n1. Truy cập vào trang web chính thức của Shop Meal.\n2. Tìm và chọn tab 'Thực đơn' (Menu) ngay trên trang chủ.\n3. Chọn mục 'Thực đơn hôm nay' hoặc các danh mục món (Cơm, Bún/Phở, Đồ uống, Tráng miệng) để xem toàn bộ các món đang phục vụ.\nNếu cần thêm gợi ý món ăn, bạn có thể hỏi trực tiếp trợ lý ảo hoặc liên hệ cửa hàng.",
+    "enabled": true
+  },
+  {
+    "id": "faq-menu-002",
+    "category": "MENU",
+    "question": "Làm thế nào để xem các chương trình khuyến mãi, ưu đãi và voucher giảm giá?",
+    "keywords": [
+      "khuyến mãi",
+      "ưu đãi",
+      "voucher",
+      "mã giảm giá",
+      "combo giảm giá",
+      "chương trình ưu đãi",
+      "offers"
+    ],
+    "answer": "Để khám phá các chương trình khuyến mãi và ưu đãi hiện có của Shop Meal:\n1. Truy cập trang web Shop Meal.\n2. Chọn mục 'Ưu đãi & Khuyến mãi' (Offers / Promotions) từ thanh điều hướng.\n3. Xem danh sách chi tiết các mã voucher, combo giảm giá và chương trình đang áp dụng.\n4. Sao chép mã ưu đãi hoặc áp dụng trực tiếp khi thanh toán đơn hàng.\nNếu cần thêm thông tin hoặc hỗ trợ áp mã, bạn đừng ngần ngại nhắn cho bộ phận hỗ trợ khách hàng.",
+    "enabled": true
+  },
+  {
+    "id": "faq-menu-003",
+    "category": "MENU",
+    "question": "Làm thế nào để kiểm tra thông tin về chất gây dị ứng và thành phần trong món ăn?",
+    "keywords": [
+      "dị ứng",
+      "thành phần món ăn",
+      "chất gây dị ứng",
+      "đậu phộng",
+      "hải sản",
+      "gluten",
+      "ăn chay",
+      "thông tin dinh dưỡng"
+    ],
+    "answer": "Để tra cứu thông tin về thành phần và các chất có nguy cơ gây dị ứng trong thực đơn:\n1. Truy cập website Shop Meal và vào mục 'Thực đơn'.\n2. Chọn món ăn bạn quan tâm để xem chi tiết mô tả và thành phần nguyên liệu.\n3. Nhấn vào liên kết 'Thông tin dị ứng & Dinh dưỡng' trong chi tiết món để kiểm tra các cảnh báo (như đậu phộng, hải sản, gluten, trứng, sữa).\nLưu ý quan trọng: Thông tin thành phần/dị ứng mang tính tham khảo. Nếu bạn có tiền sử dị ứng nghiêm trọng, vui lòng liên hệ và ghi chú trực tiếp với cửa hàng trước khi đặt món để đảm bảo an toàn.",
+    "enabled": true
+  },
+  {
+    "id": "faq-edge-006",
+    "category": "MENU",
+    "question": "Quán nấu món chay có dùng chung dầu chiên, nồi chảo và dụng cụ với món mặn không?",
+    "keywords": [
+      "món chay riêng biệt",
+      "dầu chiên món chay",
+      "ăn chay nghiêm ngặt",
+      "chay mặn chung chảo",
+      "nồi nấu món chay",
+      "thực đơn chay thanh tịnh",
+      "bếp chay riêng"
+    ],
+    "answer": "Shop Meal cam kết nghiêm ngặt về tiêu chuẩn chế biến món chay nhằm phục vụ tốt nhất cho thực khách ăn chay trường và ăn chay vì tín ngưỡng:\n1. Khu vực và dụng cụ nấu riêng: Các món chay được chế biến tại khu vực bếp riêng, sử dụng nồi, chảo xào, muôi vá và thớt chuyên dụng hoàn toàn tách biệt với món mặn.\n2. Tiêu chuẩn dầu chiên thực vật: Tuyệt đối không sử dụng lại dầu chiên từ các món mặn. Mọi món chiên chay đều sử dụng 100% dầu thực vật sạch mới và chảo chiên riêng.\n3. Gia vị thuần chay: Mọi gia vị nêm nếm (hạt nêm nấm, nước tương, dầu hào chay) đều có nguồn gốc thực vật được kiểm định và để ở kệ gia vị riêng.\n4. Lưu ý cho thực khách kiêng ngũ vị tân: Nếu bạn có yêu cầu ăn chay thuần/kiêng ngũ vị tân (hành, tỏi, kiệu, hẹ, nén), xin vui lòng ghi chú rõ 'Ăn chay nghiêm ngặt - Không ngũ vị tân' khi đặt món để đầu bếp lưu ý phục vụ chuẩn xác.",
+    "enabled": true
+  }
+]
