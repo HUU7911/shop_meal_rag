@@ -59,10 +59,11 @@ class Settings(BaseSettings):
     # Retrieval
     retrieval_top_k: int = 8
     rerank_top_n: int = 4
-    retrieval_score_threshold: float = 0.35
+    retrieval_score_threshold: float = 0.05
     hybrid_enabled: bool = True
 
     # LLM
+    llm_enabled: bool = False
     llm_provider: str = ""
     llm_model: str = ""
     llm_api_key: SecretStr = SecretStr("")
@@ -70,6 +71,8 @@ class Settings(BaseSettings):
     llm_timeout_seconds: int = 30
     llm_max_retries: int = 2
     llm_max_output_tokens: int = 800
+    llm_reasoning_effort: str = ""          # "" = không gửi; vd. none|low|medium|high (Gemini 2.5, o-series)
+    llm_stream_usage: bool = True            # gửi stream_options.include_usage; tắt nếu máy chủ trả HTTP 400
     llm_fallback_provider: str = ""
     llm_fallback_model: str = ""
 
