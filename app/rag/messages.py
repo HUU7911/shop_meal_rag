@@ -22,6 +22,17 @@ def unsafe_output(contact: str) -> str:
             f"Để an toàn, bạn vui lòng hỏi trực tiếp {contact} nhé.")
 
 
+def ingredient_unknown(contact: str) -> str:
+    return ("Mình chưa có thông tin chi tiết về thành phần hoặc chất gây dị ứng của món ăn. "
+            f"Để chắc chắn, bạn vui lòng hỏi trực tiếp {contact} nhé.")
+
+
+def followup_note(previous_question: str) -> str:
+    """Khi bot NỐI câu hỏi trước vào câu nối tiếp (chế độ không LLM, dùng luật): nói rõ để khách tự sửa nếu hiểu sai."""
+    return (f"Mình hiểu bạn đang hỏi tiếp về “{previous_question}”. "
+            "Nếu chưa đúng ý, bạn hãy hỏi lại đầy đủ hơn nhé.\n\n")
+
+
 LOGIN_REQUIRED = "Để xem thông tin đơn hàng, bạn vui lòng đăng nhập tài khoản Shop Meal rồi hỏi lại giúp mình nhé."
 OUT_OF_SCOPE = ("Mình là trợ lý của Shop Meal nên chỉ hỗ trợ về món ăn, đặt hàng, thanh toán, "
                 "giao hàng và chính sách của cửa hàng. Bạn cần mình giúp gì trong các việc này không?")

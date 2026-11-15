@@ -74,6 +74,7 @@ class ToolResult:
     url: str | None = None
     ok: bool = True                     # False = dịch vụ ngoài lỗi (text là ghi chú "không kiểm tra được")
     found: bool = True                  # False = không có dữ liệu (không tạo SourceItem)
+    data: dict = field(default_factory=dict)   # dữ liệu có cấu trúc (cho bộ tạo câu trả lời không dùng LLM)
 
 
 @dataclass
@@ -96,6 +97,7 @@ class RAGTrace:
     standalone_question: str | None = None
     filters: dict = field(default_factory=dict)
     retrieved: list[RetrievedChunk] = field(default_factory=list)
+    dropped: list[RetrievedChunk] = field(default_factory=list)   # có tìm thấy nhưng dưới ngưỡng điểm
     tools_called: list[str] = field(default_factory=list)
     model: str | None = None
     prompt_version: str | None = None

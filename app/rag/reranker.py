@@ -7,6 +7,7 @@ import logging
 
 from app.core.errors import ConfigurationError
 from app.rag.types import Hit
+from app.rag.utils import lacks_diacritics, strip_accents
 
 log = logging.getLogger("app.rag.reranker")
 
@@ -25,7 +26,13 @@ class Reranker:
     def rerank(self, question: str, hits: list[Hit], top_n: int) -> list[Hit]:
         if not self.enabled or self._model is None or not hits:
             return hits[:top_n]
-        pairs = [(question, f"{h.title}\n{h.text}") for h in hits]
+        # bge-reranker chấm câu hỏi KHÔNG DẤU rất kém khi nội dung có dấu (đo thực tế: 0.000 so với 0.607 khi
+        # bỏ dấu cả hai phía). Vậy câu không dấu thì chấm trên văn bản bỏ dấu; kết quả trả về vẫn giữ nguyên
+        # nội dung gốc có dấu vì ta chỉ đổi đầu vào chấm điểm.
+        plain = lacks_diacritics(question)
+        query = strip_accents(question) if plain else question
+        pairs = [(query, strip_accents(f"{h.title}\n{h.text}") if plain else f"{h.title}\n{h.text}")
+                 for h in hits]
         scores = self._model.predict(pairs)
         for hit, score in zip(hits, scores):
             hit.rerank_score = float(score)

@@ -3,11 +3,13 @@
 Chủ sở hữu: Member 02 (ChatService chỉ truyền history, không tự rewrite).
 
 Bộ lọc trích bằng LUẬT (rẻ, dễ test, không tốn LLM):
-  max_price / min_price (VND)  : "dưới 50k", "tối đa 50.000đ", "từ 30k đến 50k", "trên 1,5tr"
+  max_price / min_price (VND)  : "dưới 50k" (=49.999, loại mốc), "tối đa 50.000đ" (=50.000), "từ 30k đến 50k", "trên 1,5tr"
+                                 – giá trị luôn là cận ĐÃ BAO GỒM mốc, nên so sánh bằng <= / >=
   order_id                     : "đơn #123", "mã đơn 4567"
   category                     : TẮT mặc định (CATEGORY_KEYWORDS rỗng) – điền khi đã có danh mục thật
                                  từ Product Service, nếu không filter sai sẽ loại hết kết quả.
 Rewrite bằng LLM chỉ chạy khi có lịch sử VÀ câu hỏi trông như câu nối tiếp ("còn món nào rẻ hơn?").
+Không có LLM: câu có dấu hiệu nối tiếp rõ ràng được NỐI vào sau câu hỏi trước của khách (chỉ nhớ 1 lượt gần nhất).
 """
 import logging
 import re
@@ -15,6 +17,7 @@ from dataclasses import dataclass, field
 
 from app.embedding.text_normalizer import normalize_text
 from app.rag.types import HistoryTurn
+from app.rag.intent_router import GREETING, OFF_TOPIC
 from app.rag.utils import extract_order_id, has_phrase, strip_accents
 
 log = logging.getLogger("app.rag.query")
@@ -23,8 +26,10 @@ log = logging.getLogger("app.rag.query")
 CATEGORY_KEYWORDS: dict[str, str] = {}
 
 _NUM = r"(\d{1,3}(?:\.\d{3})+|\d+(?:[.,]\d+)?)\s*(k|nghin|ngan|tr|trieu|d|vnd|dong)?"
-_MAX = re.compile(rf"(?<!\w)(?:duoi|toi da|khong qua|nho hon|re hon|it hon|<=|<)\s*{_NUM}")
-_MIN = re.compile(rf"(?<!\w)(?:tren|toi thieu|lon hon|it nhat|>=|>)\s*{_NUM}")
+_MAX = re.compile(rf"(?<!\w)(duoi|toi da|khong qua|nho hon|re hon|it hon|<=|<)\s*{_NUM}")
+_MIN = re.compile(rf"(?<!\w)(tren|toi thieu|lon hon|it nhat|>=|>)\s*{_NUM}")
+# "dưới/rẻ hơn/trên/lớn hơn" là so sánh CHẶT (loại mốc); "tối đa/tối thiểu/không quá/ít nhất" thì gồm mốc.
+_STRICT = {"duoi", "nho hon", "re hon", "it hon", "<", "tren", "lon hon", ">"}
 _RANGE = re.compile(rf"(?<!\w)tu\s*{_NUM}\s*(?:den|toi|-)\s*{_NUM}")
 
 _FOLLOWUP_START = ("con", "vay", "the", "thi", "va", "nhung", "roi", "ma")
@@ -43,6 +48,7 @@ class ProcessedQuery:
     standalone: str
     filters: dict = field(default_factory=dict)
     rewritten: bool = False
+    carried_over: str | None = None     # câu hỏi trước được NỐI vào (chỉ chế độ không LLM)
 
 
 def to_vnd(number: str, unit: str | None) -> int:
@@ -68,9 +74,11 @@ def extract_filters(question: str) -> dict:
         filters["min_price"], filters["max_price"] = to_vnd(n1, u1 or u2), to_vnd(n2, u2)
     else:
         if (m := _MAX.search(q)):
-            filters["max_price"] = to_vnd(*m.groups())
+            kw, number, unit = m.groups()
+            filters["max_price"] = to_vnd(number, unit) - (1 if kw in _STRICT else 0)
         if (m := _MIN.search(q)):
-            filters["min_price"] = to_vnd(*m.groups())
+            kw, number, unit = m.groups()
+            filters["min_price"] = to_vnd(number, unit) + (1 if kw in _STRICT else 0)
     if (order_id := extract_order_id(question)):
         filters["order_id"] = order_id
     for phrase, code in CATEGORY_KEYWORDS.items():
@@ -88,21 +96,49 @@ def looks_like_followup(question: str) -> bool:
     return len(tokens) <= 4 or tokens[0] in _FOLLOWUP_START or has_phrase(q, _FOLLOWUP_WORDS)
 
 
+_TEMPORAL_BEFORE_NAY = {"hom", "ngay", "nam", "tuan", "thang", "buoi"}   # "hôm nay", "tuần này"... là thời gian, KHÔNG phải đại từ
+
+
+def has_followup_cue(question: str) -> bool:
+    """Dấu hiệu RÕ RÀNG của câu nối tiếp (bắt đầu bằng 'còn/vậy/thế...' hoặc có 'đó/này/kia/ấy'). Chặt hơn
+    `looks_like_followup` (không tính độ dài) vì bản không-LLM sẽ NỐI câu trước vào, nối nhầm sẽ làm lạc đề.
+    Không dấu thì 'này' và 'nay' giống nhau, nên 'nay' chỉ tính khi KHÔNG đứng sau hôm/ngày/năm/tuần/tháng."""
+    tokens = re.findall(r"\w+", strip_accents(question))
+    if not tokens:
+        return False
+    if tokens[0] in _FOLLOWUP_START:
+        return True
+    for i, token in enumerate(tokens):
+        if token in ("do", "kia", "ay"):
+            return True
+        if token == "nay" and (i == 0 or tokens[i - 1] not in _TEMPORAL_BEFORE_NAY):
+            return True
+    return False
+
+
 class QueryProcessor:
     def __init__(self, llm=None):
         self.llm = llm          # LLMLike; None => không rewrite (chỉ chuẩn hóa + trích bộ lọc)
 
     async def process(self, question: str, history: list[HistoryTurn]) -> ProcessedQuery:
         original = normalize_text(question)
-        standalone, rewritten = original, False
+        standalone, rewritten, carried_over = original, False, None
         if self.llm is not None and history and looks_like_followup(original):
             candidate = await self._rewrite(original, history)
             if candidate and candidate != original:
                 standalone, rewritten = candidate, True
+        elif self.llm is None and history and has_followup_cue(original) \
+                and not has_phrase(strip_accents(original), GREETING + OFF_TOPIC):   # chào hỏi/lạc đề: không nối ngữ cảnh cũ
+            # Không có LLM: dùng luật — nối câu hỏi gần nhất của khách vào đầu để truy xuất/định tuyến có ngữ cảnh.
+            previous = next((t.content for t in reversed(history) if t.role == "user"), "")
+            if previous:
+                standalone, rewritten = f"{previous[:300].rstrip()} {original}", True
+                carried_over = previous[:120].strip()
         filters = extract_filters(standalone)
         for key, value in extract_filters(original).items():     # bộ lọc nói rõ ở câu gốc luôn thắng
             filters[key] = value
-        return ProcessedQuery(original=original, standalone=standalone, filters=filters, rewritten=rewritten)
+        return ProcessedQuery(original=original, standalone=standalone, filters=filters, rewritten=rewritten,
+                              carried_over=carried_over)
 
     async def _rewrite(self, question: str, history: list[HistoryTurn]) -> str | None:
         lines = [f"{'Khách' if t.role == 'user' else 'Trợ lý'}: {t.content[:300]}" for t in history[-4:]]

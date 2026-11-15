@@ -27,7 +27,8 @@ def build_filter(content_types: list[str] | None, category: str | None = None,
     must: list = [
         models.FieldCondition(key="enabled", match=models.MatchValue(value=True)),
         models.Filter(should=[
-            models.IsNullCondition(is_null=models.PayloadField(key="effective_date")),
+            # IsEmpty (KHÔNG phải IsNull): khớp cả khi trường vắng mặt. Payload bỏ trường rỗng nên FAQ/sản phẩm
+            # không có effective_date; IsNull chỉ khớp trường tồn tại và bằng null -> sẽ loại sạch FAQ/sản phẩm.
             models.IsEmptyCondition(is_empty=models.PayloadField(key="effective_date")),
             models.FieldCondition(key="effective_date", range=models.DatetimeRange(lte=now)),
         ]),
@@ -50,6 +51,11 @@ class Retriever:
         try:
             info = await self.client.get_collection(self.collection)
         except Exception as exc:  # noqa: BLE001
+            text = str(exc)
+            if "404" in text or "doesn't exist" in text or "Not found" in text:
+                raise VectorDatabaseError(
+                    f"Chưa có collection '{self.collection}' trong Qdrant. "
+                    "Hãy nạp dữ liệu trước: `python -m scripts.seed_faq` (hoặc chạy ingestion).") from exc
             raise VectorDatabaseError(f"Không đọc được collection '{self.collection}': {exc}") from exc
         vectors = info.config.params.vectors
         dense = vectors.get("dense") if isinstance(vectors, dict) else None

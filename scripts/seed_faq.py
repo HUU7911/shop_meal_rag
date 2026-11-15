@@ -2,6 +2,7 @@
 
     python -m scripts.seed_faq            # tạo/ghi vào shop_meal_knowledge_v1 và trỏ alias
     python -m scripts.seed_faq --recreate # xóa collection v1 rồi tạo lại
+    python -m scripts.seed_faq --with-demo-products   # thêm mô tả món GIẢ (scripts/demo_data.py) để thử luồng sản phẩm
 
 Khi ingestion thật xong thì BỎ script này. Cố ý đơn giản: không registry, không incremental.
 Quy ước đã dùng đúng hợp đồng payload (app/ingestion/payload.py): id uuid5, enabled, document_id...
@@ -41,6 +42,21 @@ def load_faq() -> list[tuple[ChunkPayload, str]]:
     return out
 
 
+def load_demo_products() -> list[tuple[ChunkPayload, str]]:
+    """Mô tả món giả. Theo hợp đồng: KHÔNG đưa giá/trạng thái vào text embed; chỉ để snapshot trong payload."""
+    from scripts.demo_data import DEMO_PRODUCTS
+    out = []
+    for prod in DEMO_PRODUCTS:
+        text = f"{prod.name}. Danh mục: {prod.category}. {prod.description}"
+        out.append((ChunkPayload(
+            chunk_id=point_id(ContentType.PRODUCT, prod.product_id, 0), document_id=prod.product_id,
+            content_type="PRODUCT", title=prod.name, text=text, chunk_index=0, content_hash=content_hash(text),
+            updated_at=now_iso(), enabled=True, category=prod.category, source_url=prod.url,
+            product_id=prod.product_id, product_type=prod.product_type, status_snapshot=prod.status,
+            price_snapshot=prod.price), text))
+    return out
+
+
 def _front_matter(raw: str) -> tuple[dict, str]:
     m = re.match(r"^---\n(.*?)\n---\n(.*)$", raw, re.S)
     if not m:
@@ -72,7 +88,7 @@ def load_policies() -> list[tuple[ChunkPayload, str]]:
     return out
 
 
-async def main(recreate: bool) -> None:
+async def main(recreate: bool, with_demo_products: bool = False) -> None:
     s = get_settings()
     client = AsyncQdrantClient(url=s.qdrant_url, api_key=s.qdrant_api_key.get_secret_value() or None)
     embedder = EmbeddingService(s.embedding_model, s.embedding_dim, s.embedding_device)
@@ -88,7 +104,7 @@ async def main(recreate: bool) -> None:
         for field, kind in INDEXED_FIELDS.items():
             await client.create_payload_index(collection, field_name=field, field_schema=_SCHEMA[kind])
 
-    rows = load_faq() + load_policies()
+    rows = load_faq() + load_policies() + (load_demo_products() if with_demo_products else [])
     encoded = await asyncio.to_thread(embedder.embed_documents, [normalize_text(e) for _, e in rows])
     points = []
     for (payload, _), enc in zip(rows, encoded):
@@ -117,4 +133,6 @@ async def main(recreate: bool) -> None:
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--recreate", action="store_true")
-    asyncio.run(main(ap.parse_args().recreate))
+    ap.add_argument("--with-demo-products", action="store_true")
+    args = ap.parse_args()
+    asyncio.run(main(args.recreate, args.with_demo_products))

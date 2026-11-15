@@ -5,7 +5,7 @@ Bảo mật: chỉ dùng token của user (Order Service là nơi kiểm tra s�
 """
 import logging
 
-from app.rag.tools.common import UNAVAILABLE_NOTE, format_price, status_label
+from app.rag.tools.common import UNAVAILABLE_NOTE, format_price, order_data, status_label
 from app.rag.types import ToolResult
 from app.schemas.chat_schema import SourceType
 
@@ -35,5 +35,5 @@ async def order_status(client, order_id: str | None, *, user_token: str | None) 
         text = (f"Không tìm thấy đơn #{order_id} thuộc tài khoản của bạn." if order_id
                 else "Tài khoản của bạn chưa có đơn hàng gần đây.")
         return [ToolResult("order_status", SourceType.ORDER, order_id or "-", "Đơn hàng", text, found=False)]
-    return [ToolResult("order_status", SourceType.ORDER, o.order_id, f"Đơn #{o.order_id}", _render(o))
-            for o in orders]
+    return [ToolResult("order_status", SourceType.ORDER, o.order_id, f"Đơn #{o.order_id}", _render(o),
+                       data=order_data(o)) for o in orders]

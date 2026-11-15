@@ -18,13 +18,14 @@ from dataclasses import dataclass, field
 
 from app.core.errors import EmbeddingError, GenerationError, GuardrailBlocked, RetrievalError, VectorDatabaseError
 from app.rag import messages as msg
+from app.rag.answer_generator import TemplateAnswerGenerator, asks_ingredients
 from app.rag.context_builder import BuiltContext
 from app.rag.tools.order_status import order_status
 from app.rag.tools.product_detail import product_detail
 from app.rag.tools.product_search import product_search
 from app.rag.types import (Hit, RAGEvent, RAGRequest, RAGResult, RAGTrace, RetrievedChunk, TokenUsage,
                            ToolResult)
-from app.rag.utils import timed
+from app.rag.utils import apply_score_threshold, timed
 from app.schemas.chat_schema import Intent, SourceItem
 
 log = logging.getLogger("app.rag.engine")
@@ -46,11 +47,13 @@ class _Prepared:
 
 class DefaultRAGEngine:
     def __init__(self, *, settings, retriever, reranker, query_processor, router, guardrails,
-                 context_builder, prompt_builder, llm, product_client, order_client):
+                 context_builder, prompt_builder, llm, product_client, order_client, answer_generator=None):
+        """llm=None  => chế độ KHÔNG dùng LLM: câu trả lời do `answer_generator` (trích xuất + mẫu câu) tạo ra."""
         self.s = settings
         self.retriever, self.reranker, self.qp, self.router = retriever, reranker, query_processor, router
         self.guardrails, self.context_builder, self.prompt_builder = guardrails, context_builder, prompt_builder
         self.llm, self.product_client, self.order_client = llm, product_client, order_client
+        self.answer_generator = answer_generator or TemplateAnswerGenerator(settings.support_contact)
 
     # ================= API =================
     async def invoke(self, request: RAGRequest) -> RAGResult:
@@ -99,8 +102,8 @@ class DefaultRAGEngine:
 
     # ================= chuẩn bị (dùng chung cho invoke/stream) =================
     async def _prepare(self, request: RAGRequest) -> _Prepared:
-        trace = RAGTrace(model=getattr(self.llm, "model_name", None),
-                         prompt_version=self.prompt_builder.version)
+        trace = RAGTrace(model=getattr(self.llm, "model_name", None) if self.llm else "template-extractive",
+                         prompt_version=self.prompt_builder.version if self.llm else "extractive-v1")
         prep = _Prepared(trace=trace, intent=Intent.FAQ_POLICY, started=time.perf_counter(),
                          question=request.question)
         contact = self.s.support_contact
@@ -129,6 +132,13 @@ class DefaultRAGEngine:
             return prep
         if intent is Intent.ORDER_STATUS and (request.user.is_guest or not request.user.token):
             prep.result = self._done(prep, msg.LOGIN_REQUIRED, "LOGIN_REQUIRED")
+            return prep
+
+        if self.llm is None and intent in (Intent.PRODUCT_SEARCH, Intent.PRODUCT_DETAIL) and asks_ingredients(question):
+            # Hỏi thành phần/dị ứng: không có dữ liệu để khẳng định. Không dùng ngưỡng truy xuất để quyết định, vì mô tả
+            # món không chứa câu trả lời nên điểm rerank thấp (đo thực tế: 0.016) -> chuyển thẳng cho cửa hàng.
+            # Chỉ xét câu hỏi HIỆN TẠI (không xét câu nối tiếp) để câu "món này giá bao nhiêu?" sau đó không bị từ chối nhầm.
+            prep.result = self._done(prep, msg.ingredient_unknown(contact), None)
             return prep
 
         hits: list[Hit] = []
@@ -160,6 +170,15 @@ class DefaultRAGEngine:
                 prep.result = self._done(prep, msg.no_info(contact), "NO_CONTEXT")
             return prep
 
+        if self.llm is None:                       # chế độ không LLM: trích xuất + mẫu câu
+            with timed(trace, "generate"):
+                answer = self.answer_generator.generate(intent=intent, question=question, hits=hits,
+                                                        tool_results=tool_results)
+            if pq.carried_over:        # câu hỏi đã được NỐI theo luật: báo rõ cách hiểu để khách sửa nếu sai (vd. đổi chủ đề)
+                answer = msg.followup_note(pq.carried_over) + answer
+            prep.result = self._finalize(prep, answer, {})
+            return prep
+
         prep.messages = self.prompt_builder.build(question=question, standalone=pq.standalone,
                                                   history=request.history, context=built.text, intent=intent)
         return prep
@@ -178,25 +197,14 @@ class DefaultRAGEngine:
                 hits = await asyncio.to_thread(self.reranker.rerank, pq.standalone, hits, self.s.rerank_top_n)
         else:
             hits = hits[: self.s.rerank_top_n]
-        hits = self._apply_threshold(hits)
+        hits, dropped = self._apply_threshold(hits)
         trace.retrieved.extend(RetrievedChunk(h.chunk_id, h.document_id, h.score, h.rerank_score) for h in hits)
+        trace.dropped.extend(RetrievedChunk(h.chunk_id, h.document_id, h.score, h.rerank_score) for h in dropped)
         return hits, False
 
-    def _apply_threshold(self, hits: list[Hit]) -> list[Hit]:
-        """Ngưỡng theo loại điểm: rerank_score, hoặc cosine. Điểm RRF không có ý nghĩa tuyệt đối -> giữ nguyên.
-        Ngưỡng PHẢI được hiệu chỉnh bằng `make eval` (RETRIEVAL_SCORE_THRESHOLD)."""
-        t = self.s.retrieval_score_threshold
-        kept = []
-        for h in hits:
-            if h.rerank_score is not None:
-                if h.rerank_score >= t:
-                    kept.append(h)
-            elif h.score_kind == "cosine":
-                if h.score >= t:
-                    kept.append(h)
-            else:
-                kept.append(h)
-        return kept
+    def _apply_threshold(self, hits: list[Hit]) -> tuple[list[Hit], list[Hit]]:
+        """Ngưỡng PHẢI được hiệu chỉnh bằng `make eval` (RETRIEVAL_SCORE_THRESHOLD). Chi tiết: utils.apply_score_threshold."""
+        return apply_score_threshold(hits, self.s.retrieval_score_threshold, drop_unscored_rrf=self.llm is None)
 
     async def _product_tools(self, intent: Intent, hits: list[Hit], filters: dict, trace: RAGTrace
                              ) -> list[ToolResult]:

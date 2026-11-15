@@ -1,7 +1,7 @@
 """Tool chi tiết 1 sản phẩm (giá, còn hàng) qua ProductClient.get – luôn LIVE."""
 import logging
 
-from app.rag.tools.common import UNAVAILABLE_NOTE, render_product
+from app.rag.tools.common import UNAVAILABLE_NOTE, product_data, render_product
 from app.rag.types import ToolResult
 from app.schemas.chat_schema import SourceType
 
@@ -19,4 +19,4 @@ async def product_detail(client, product_id: str) -> ToolResult:
         return ToolResult("product_detail", SourceType.PRODUCT, product_id, product_id,
                           f"Không tìm thấy sản phẩm {product_id}.", found=False)
     return ToolResult("product_detail", SourceType.PRODUCT, info.product_id, info.name,
-                      render_product(info), url=info.url)
+                      render_product(info), url=info.url, data=product_data(info))

@@ -35,6 +35,8 @@ class LLMService:
         self.base_url = (settings.llm_base_url or DEFAULT_BASE_URL).rstrip("/")
         self.api_key = settings.llm_api_key.get_secret_value()
         self.default_max_tokens = settings.llm_max_output_tokens
+        self.reasoning_effort = getattr(settings, "llm_reasoning_effort", "") or None
+        self.stream_usage = getattr(settings, "llm_stream_usage", True)
         self.max_retries = settings.llm_max_retries
         self._client = client or httpx.AsyncClient(timeout=httpx.Timeout(settings.llm_timeout_seconds))
         self._owns_client = client is None
@@ -52,7 +54,9 @@ class LLMService:
                  stream: bool) -> dict:
         body = {"model": model, "messages": messages, "temperature": temperature,
                 "max_tokens": max_tokens or self.default_max_tokens, "stream": stream}
-        if stream:
+        if self.reasoning_effort:
+            body["reasoning_effort"] = self.reasoning_effort
+        if stream and self.stream_usage:
             body["stream_options"] = {"include_usage": True}
         return body
 

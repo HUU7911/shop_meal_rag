@@ -22,8 +22,10 @@ from app.core.config import get_settings
 from app.core.errors import GuardrailBlocked
 from app.rag.guardrails import Guardrails
 from app.rag.intent_router import IntentRouter
-from app.rag.query_processor import extract_filters
+from app.rag.query_processor import QueryProcessor
 from app.rag.types import HistoryTurn, RAGRequest, RAGUser
+from app.rag.utils import apply_score_threshold
+from eval.metrics import best_rerank_scores, threshold_sweep, top_rerank_scores
 from app.schemas.chat_schema import Intent
 
 ROOT = Path(__file__).resolve().parent
@@ -39,50 +41,109 @@ def pct(n: int, d: int) -> float:
     return round(100 * n / d, 1) if d else 0.0
 
 
+def history_of(row: dict) -> list[HistoryTurn]:
+    return [HistoryTurn(h["role"], h["content"]) for h in row.get("history", [])]
+
+
 # ---------------- intent ----------------
-def eval_intent(rows: list[dict], settings) -> dict:
-    guard, router, results = Guardrails(max_length=settings.message_max_length), IntentRouter(), []
+async def eval_intent(rows: list[dict], settings) -> dict:
+    """Guardrail -> QueryProcessor (nối câu nối tiếp theo luật, giống bot thật) -> router."""
+    guard, router, qp = Guardrails(max_length=settings.message_max_length), IntentRouter(), QueryProcessor(None)
+    results = []
     for r in rows:
         try:
-            guard.check_input(r["question"])
-            predicted = router.route(r["question"], extract_filters(r["question"])).value
+            question = guard.check_input(r["question"])
+            pq = await qp.process(question, history_of(r))
+            predicted = router.route(pq.standalone, pq.filters).value
         except GuardrailBlocked:
             predicted = Intent.OUT_OF_SCOPE.value
-        results.append({"id": r["id"], "expected": r["expected_intent"], "predicted": predicted,
-                        "ok": predicted == r["expected_intent"]})
-    ok = sum(x["ok"] for x in results)
-    return {"accuracy_pct": pct(ok, len(results)), "n": len(results),
+        results.append({"id": r["id"], "question": r["question"], "expected": r["expected_intent"],
+                        "predicted": predicted, "ok": predicted == r["expected_intent"]})
+    by_intent: dict[str, dict] = {}
+    for x in results:
+        b = by_intent.setdefault(x["expected"], {"n": 0, "ok": 0})
+        b["n"] += 1
+        b["ok"] += x["ok"]
+    return {"accuracy_pct": pct(sum(x["ok"] for x in results), len(results)), "n": len(results),
+            "by_expected_intent": {k: f"{v['ok']}/{v['n']}" for k, v in sorted(by_intent.items())},
             "errors": [x for x in results if not x["ok"]]}
 
 
 # ---------------- retrieval ----------------
+def _brief(hits) -> list[str]:
+    return [f"{h.document_id}(s={h.score:.3f}" + (f",r={h.rerank_score:.3f}" if h.rerank_score is not None else "") + ")"
+            for h in hits]
+
+
 async def eval_retrieval(rows: list[dict], settings, k: int) -> dict:
+    """Mô phỏng đúng đường truy xuất của bot: QueryProcessor -> retriever -> rerank -> NGƯỠNG ĐIỂM.
+
+    Chỉ số tổng (theo ngưỡng hiện tại):
+      hit@k / mrr      : chunk đúng có trong top-k (trước ngưỡng) — chất lượng XẾP HẠNG.
+      answerable_pct   : chunk đúng còn sống SAU ngưỡng.
+      top1_correct_pct : chunk đầu tiên SAU ngưỡng là chunk đúng -> bot trả lời ĐÚNG (chế độ không LLM trả chunk đầu).
+      false_accept_pct : câu KB không có đáp án (expect_no_context) mà bot vẫn trả lời nội dung khác.
+    Phân loại lỗi (khác nhau về mức nguy hiểm):
+      found_but_below_threshold : chunk đúng có trong top-k nhưng bị ngưỡng loại, KHÔNG còn chunk nào -> bot nói "chưa có thông tin" (an toàn).
+      wrong_chunk_first         : bot có chunk để trả lời nhưng chunk đầu KHÔNG đúng -> trả lời SAI chủ đề (nguy hiểm hơn).
+    `threshold_sweep` cho biết 3 loại kết quả (đúng / sai / không trả lời) và false-accept theo từng ngưỡng để CHỌN ngưỡng.
+    Giả định router đúng (dùng expected_intent chọn loại nội dung); độ chính xác router đo riêng ở --mode intent.
+    """
     from app.rag.factory import build_retrieval_stack
     client, _embedder, retriever, reranker = await build_retrieval_stack(settings)
-    hits_at_k, reciprocal, details, latencies = 0, [], [], []
+    qp, drop_rrf = QueryProcessor(None), not settings.llm_enabled
+
+    async def run(r: dict):
+        pq = await qp.process(r["question"], history_of(r))
+        hits = await retriever.search(pq.standalone, content_types=RETRIEVAL_TYPES.get(r["expected_intent"]),
+                                      filters=pq.filters, top_k=settings.retrieval_top_k)
+        hits = await asyncio.to_thread(reranker.rerank, pq.standalone, hits, k) if reranker.enabled else hits[:k]
+        kept, _dropped = apply_score_threshold(hits, settings.retrieval_score_threshold, drop_unscored_rrf=drop_rrf)
+        return hits, kept
+
     scored = [r for r in rows if r.get("expected_doc_ids")]
+    refusals = [r for r in rows if r.get("expect_no_context")]
+    in_topk = answerable = top1 = 0
+    reciprocal, latencies, misses, below_threshold, wrong_first, false_accepts = [], [], [], [], [], []
+    scored_rows, refusal_rows = [], []
     for r in scored:
-        question, intent = r["question"], r["expected_intent"]
         started = time.perf_counter()
-        hits = await retriever.search(question, content_types=RETRIEVAL_TYPES.get(intent),
-                                      filters=extract_filters(question), top_k=settings.retrieval_top_k)
-        hits = await asyncio.to_thread(reranker.rerank, question, hits, k) if reranker.enabled else hits[:k]
+        hits, kept = await run(r)
         latencies.append((time.perf_counter() - started) * 1000)
-        expected, rank = set(r["expected_doc_ids"]), None
-        for i, h in enumerate(hits, 1):
-            if h.document_id in expected:
-                rank = i
-                break
-        hits_at_k += rank is not None
+        expected = set(r["expected_doc_ids"])
+        scored_rows.append((expected, hits))
+        rank = next((i for i, h in enumerate(hits, 1) if h.document_id in expected), None)
+        in_topk += rank is not None
         reciprocal.append(1 / rank if rank else 0.0)
-        details.append({"id": r["id"], "rank": rank, "got": [h.document_id for h in hits],
-                        "expected": sorted(expected)})
+        answerable += any(h.document_id in expected for h in kept)
+        top1 += bool(kept) and kept[0].document_id in expected
+        entry = {"id": r["id"], "question": r["question"], "expected": sorted(expected), "got": _brief(hits)}
+        if rank is None:
+            misses.append(entry)
+        elif not kept:
+            below_threshold.append(entry)
+        elif kept[0].document_id not in expected:
+            wrong_first.append({**entry, "bot_would_answer_with": _brief(kept)})
+    for r in refusals:
+        hits, kept = await run(r)
+        refusal_rows.append(hits)
+        if kept:
+            false_accepts.append({"id": r["id"], "question": r["question"], "answered_with": _brief(kept)})
     await client.close()
     n = len(scored)
-    return {"k": k, "n": n, f"hit@{k}_pct": pct(hits_at_k, n),
-            "mrr": round(sum(reciprocal) / n, 3) if n else 0.0,
-            "latency_ms_p50": round(statistics.median(latencies)) if latencies else 0,
-            "misses": [d for d in details if d["rank"] is None]}
+    result = {"k": k, "n_scored": n, "n_refusal_cases": len(refusals), f"hit@{k}_pct": pct(in_topk, n),
+              "mrr": round(sum(reciprocal) / n, 3) if n else 0.0,
+              "answerable_pct": pct(answerable, n), "top1_correct_pct": pct(top1, n),
+              "false_accept_pct": pct(len(false_accepts), len(refusals)),
+              "threshold": settings.retrieval_score_threshold,
+              "latency_ms_p50": round(statistics.median(latencies)) if latencies else 0}
+    if reranker.enabled:
+        result["threshold_sweep"] = threshold_sweep(scored_rows, refusal_rows)
+        result["rerank_score_of_correct_chunk"] = best_rerank_scores(scored_rows)
+        result["rerank_top_score_of_refusal_cases"] = top_rerank_scores(refusal_rows)
+    result.update({"misses_not_in_topk": misses, "found_but_below_threshold": below_threshold,
+                   "wrong_chunk_first": wrong_first, "false_accepts": false_accepts})
+    return result
 
 
 # ---------------- full ----------------
@@ -107,6 +168,9 @@ async def eval_full(rows: list[dict], settings, k: int, use_judge: bool) -> dict
     from app.integrations.product_client import ProductClient
     from app.rag.factory import build_rag_engine
     engine, close = await build_rag_engine(settings, ProductClient(), OrderClient())
+    if use_judge and engine.llm is None:
+        print("(--judge cần LLM_ENABLED=true; đang ở chế độ không LLM nên bỏ qua chấm điểm bằng LLM)")
+        use_judge = False
     guest, details = RAGUser(user_id=None), []
     intent_ok = fallback_ok = fallback_n = 0
     coverage, latencies, tokens = [], [], []
@@ -150,7 +214,7 @@ def main() -> None:
         **({"hybrid_enabled": False} if args.no_hybrid else {})})
     rows = load_golden(args.golden, args.limit)
     if args.mode == "intent":
-        metrics = eval_intent(rows, settings)
+        metrics = asyncio.run(eval_intent(rows, settings))
     elif args.mode == "retrieval":
         metrics = asyncio.run(eval_retrieval(rows, settings, args.k))
     else:

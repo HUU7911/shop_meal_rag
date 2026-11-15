@@ -38,23 +38,29 @@ async def build_retrieval_stack(settings):
 
 async def build_rag_engine(settings, product_client, order_client
                            ) -> tuple[DefaultRAGEngine, Callable[[], Awaitable[None]]]:
-    if not settings.llm_model:
-        raise ConfigurationError("RAG_ENABLED=true nhưng LLM_MODEL chưa cấu hình")
+    use_llm = settings.llm_enabled
+    if use_llm and not settings.llm_model:
+        raise ConfigurationError("LLM_ENABLED=true nhưng LLM_MODEL chưa cấu hình")
+    if not use_llm and not (settings.rerank_enabled or not settings.hybrid_enabled):
+        raise ConfigurationError(
+            "Chế độ không LLM cần điểm lọc đáng tin: hãy bật RERANK_ENABLED=true (khuyến nghị) "
+            "hoặc đặt HYBRID_ENABLED=false")
     client, embedder, retriever, reranker = await build_retrieval_stack(settings)
     await retriever.verify()                       # lệch dim/model -> dừng khởi động với lỗi rõ ràng
-    llm = LLMService(settings)
+    llm = LLMService(settings) if use_llm else None
     engine = DefaultRAGEngine(
         settings=settings, retriever=retriever, reranker=reranker,
         query_processor=QueryProcessor(llm), router=IntentRouter(),
         guardrails=Guardrails(max_length=settings.message_max_length, support_contact=settings.support_contact),
-        context_builder=ContextBuilder(), prompt_builder=PromptBuilder(), llm=llm,
+        context_builder=ContextBuilder(), prompt_builder=PromptBuilder() if use_llm else None, llm=llm,
         product_client=product_client, order_client=order_client)
 
     async def close() -> None:
-        await llm.aclose()
+        if llm is not None:
+            await llm.aclose()
         await client.close()
 
-    log.info("RAGEngine sẵn sàng (embedding=%s, rerank=%s, hybrid=%s, prompt=%s)", embedder.model_name,
-             settings.rerank_enabled, settings.hybrid_enabled and embedder.supports_sparse,
-             engine.prompt_builder.version)
+    log.info("RAGEngine sẵn sàng (chế độ=%s, embedding=%s, rerank=%s, hybrid=%s)",
+             "LLM" if use_llm else "KHÔNG LLM (trích xuất + mẫu câu)", embedder.model_name,
+             settings.rerank_enabled, settings.hybrid_enabled and embedder.supports_sparse)
     return engine, close

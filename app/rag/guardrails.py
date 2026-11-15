@@ -73,6 +73,7 @@ class Guardrails:
 
         mentions_allergen = has_phrase(answer_lower, [re.escape(a) for a in _ALLERGENS])
         topic = has_phrase(strip_accents(question) + " " + strip_accents(answer), _ALLERGY_TOPIC)
-        if (topic or mentions_allergen) and messages.ALLERGY_NOTE not in answer:
+        already_referred = "hỏi trực tiếp" in lowered      # câu từ chối thành phần đã dặn hỏi cửa hàng rồi
+        if (topic or mentions_allergen) and messages.ALLERGY_NOTE not in answer and not already_referred:
             answer = f"{answer}\n\n{messages.ALLERGY_NOTE}"
         return OutputCheck(answer)

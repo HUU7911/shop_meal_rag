@@ -8,7 +8,7 @@ Sản phẩm hết hàng/ẩn vẫn được trả (kèm trạng thái) để LL
 import asyncio
 import logging
 
-from app.rag.tools.common import UNAVAILABLE_NOTE, render_product
+from app.rag.tools.common import UNAVAILABLE_NOTE, product_data, render_product
 from app.rag.types import ToolResult
 from app.schemas.chat_schema import SourceType
 
@@ -25,7 +25,7 @@ def _in_price_range(info, filters: dict) -> bool:
 
 def _to_result(info) -> ToolResult:
     return ToolResult("product_search", SourceType.PRODUCT, info.product_id, info.name,
-                      render_product(info), url=info.url)
+                      render_product(info), url=info.url, data=product_data(info))
 
 
 async def product_search(client, *, product_ids: list[str], filters: dict, size: int = 5) -> list[ToolResult]:
