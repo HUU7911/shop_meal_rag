@@ -1,0 +1,289 @@
+{
+  "timestamp": "2026-11-16T08:46:43",
+  "mode": "retrieval",
+  "config": {
+    "embedding_model": "BAAI/bge-m3",
+    "hybrid": true,
+    "rerank": true,
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "top_k": 8,
+    "rerank_top_n": 4,
+    "threshold": 0.05,
+    "llm_model": "gemini-3.8-flash"
+  },
+  "metrics": {
+    "k": 4,
+    "n_scored": 72,
+    "n_refusal_cases": 13,
+    "hit@4_pct": 95.8,
+    "mrr": 0.958,
+    "answerable_pct": 95.8,
+    "top1_correct_pct": 95.8,
+    "false_accept_pct": 53.8,
+    "threshold": 0.05,
+    "latency_ms_p50": 10105,
+    "threshold_sweep": [
+      {
+        "threshold": 0.02,
+        "correct_first_pct": 95.8,
+        "wrong_answer_pct": 4.2,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 69.2
+      },
+      {
+        "threshold": 0.05,
+        "correct_first_pct": 95.8,
+        "wrong_answer_pct": 4.2,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 53.8
+      },
+      {
+        "threshold": 0.1,
+        "correct_first_pct": 95.8,
+        "wrong_answer_pct": 4.2,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 53.8
+      },
+      {
+        "threshold": 0.15,
+        "correct_first_pct": 95.8,
+        "wrong_answer_pct": 4.2,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 53.8
+      },
+      {
+        "threshold": 0.2,
+        "correct_first_pct": 95.8,
+        "wrong_answer_pct": 4.2,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 53.8
+      },
+      {
+        "threshold": 0.25,
+        "correct_first_pct": 95.8,
+        "wrong_answer_pct": 4.2,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 53.8
+      },
+      {
+        "threshold": 0.3,
+        "correct_first_pct": 95.8,
+        "wrong_answer_pct": 2.8,
+        "no_answer_pct": 1.4,
+        "false_accept_pct": 46.2
+      },
+      {
+        "threshold": 0.35,
+        "correct_first_pct": 95.8,
+        "wrong_answer_pct": 2.8,
+        "no_answer_pct": 1.4,
+        "false_accept_pct": 46.2
+      },
+      {
+        "threshold": 0.4,
+        "correct_first_pct": 95.8,
+        "wrong_answer_pct": 2.8,
+        "no_answer_pct": 1.4,
+        "false_accept_pct": 46.2
+      },
+      {
+        "threshold": 0.5,
+        "correct_first_pct": 95.8,
+        "wrong_answer_pct": 2.8,
+        "no_answer_pct": 1.4,
+        "false_accept_pct": 46.2
+      }
+    ],
+    "rerank_score_of_correct_chunk": [
+      1.0,
+      0.995,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.997,
+      1.0,
+      0.997,
+      1.0,
+      0.998,
+      1.0,
+      0.999,
+      1.0,
+      1.0,
+      1.0,
+      0.997,
+      1.0,
+      0.998,
+      1.0,
+      0.999,
+      1.0,
+      1.0,
+      1.0,
+      0.998,
+      1.0,
+      0.999,
+      1.0,
+      0.999,
+      1.0,
+      0.998,
+      1.0,
+      0.999,
+      1.0,
+      0.998,
+      1.0,
+      0.996,
+      1.0,
+      0.998,
+      1.0,
+      null,
+      1.0,
+      0.997,
+      1.0,
+      0.997,
+      1.0,
+      0.998,
+      1.0,
+      0.997,
+      1.0,
+      0.994,
+      1.0,
+      0.995,
+      1.0,
+      0.995,
+      1.0,
+      0.996,
+      1.0,
+      0.999,
+      1.0,
+      0.997,
+      1.0,
+      null,
+      1.0,
+      0.997,
+      1.0,
+      null,
+      1.0,
+      0.995,
+      1.0,
+      0.998
+    ],
+    "rerank_top_score_of_refusal_cases": [
+      0.027,
+      0.035,
+      0.01,
+      0.0,
+      0.914,
+      0.996,
+      0.263,
+      0.907,
+      0.794,
+      0.006,
+      0.994,
+      0.0,
+      0.968
+    ],
+    "misses_not_in_topk": [
+      {
+        "id": "kb042",
+        "question": "toi co the huy don hang truc tuyen da dat khong va lam nhu the nao?",
+        "expected": [
+          "faq-order-003"
+        ],
+        "got": [
+          "faq-edge-010(s=0.444,r=0.751)",
+          "faq-order-002(s=0.250,r=0.674)",
+          "faq-service-003(s=0.392,r=0.637)",
+          "faq-service-002(s=0.200,r=0.436)"
+        ]
+      },
+      {
+        "id": "kb064",
+        "question": "lam the nao de lien he voi bo phan cham soc khach hang cua shop meal?",
+        "expected": [
+          "faq-support-001"
+        ],
+        "got": [
+          "faq-service-001(s=0.317,r=0.933)",
+          "faq-payment-001(s=0.268,r=0.820)",
+          "faq-menu-003(s=0.392,r=0.720)",
+          "faq-support-005(s=0.500,r=0.676)"
+        ]
+      },
+      {
+        "id": "kb068",
+        "question": "lam the nao de gui khieu nai ve chat luong dich vu hoac thai do phuc vu?",
+        "expected": [
+          "faq-support-003"
+        ],
+        "got": [
+          "privacy(s=0.250,r=0.256)",
+          "faq-support-002(s=1.000,r=0.207)",
+          "faq-menu-001(s=0.298,r=0.118)",
+          "privacy(s=0.333,r=0.029)"
+        ]
+      }
+    ],
+    "found_but_below_threshold": [],
+    "wrong_chunk_first": [],
+    "false_accepts": [
+      {
+        "id": "q052",
+        "question": "Phí giao hàng bao nhiêu",
+        "answered_with": [
+          "delivery(s=1.000,r=0.914)",
+          "faq-edge-011(s=0.350,r=0.600)",
+          "faq-edge-001(s=0.250,r=0.085)"
+        ]
+      },
+      {
+        "id": "q053",
+        "question": "Shop có xuất hóa đơn VAT không?",
+        "answered_with": [
+          "faq-edge-008(s=1.000,r=0.996)"
+        ]
+      },
+      {
+        "id": "q054",
+        "question": "Đổi trả món ăn như thế nào?",
+        "answered_with": [
+          "faq-order-004(s=0.556,r=0.263)",
+          "delivery(s=0.500,r=0.065)"
+        ]
+      },
+      {
+        "id": "q055",
+        "question": "Thời gian giao hàng mất bao lâu?",
+        "answered_with": [
+          "delivery(s=0.833,r=0.907)",
+          "faq-edge-003(s=0.271,r=0.632)"
+        ]
+      },
+      {
+        "id": "q056",
+        "question": "Có mã giảm giá hay khuyến mãi gì không?",
+        "answered_with": [
+          "faq-edge-007(s=0.667,r=0.794)",
+          "faq-menu-002(s=1.000,r=0.679)"
+        ]
+      },
+      {
+        "id": "q058",
+        "question": "Làm sao để đổi địa chỉ giao hàng sau khi đã đặt?",
+        "answered_with": [
+          "faq-edge-001(s=1.000,r=0.994)",
+          "faq-edge-014(s=0.361,r=0.244)",
+          "faq-order-004(s=0.500,r=0.098)"
+        ]
+      },
+      {
+        "id": "q060",
+        "question": "Đơn tối thiểu bao nhiêu thì được giao?",
+        "answered_with": [
+          "faq-edge-011(s=1.000,r=0.968)",
+          "delivery(s=0.583,r=0.097)"
+        ]
+      }
+    ]
+  }
+}
