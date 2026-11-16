@@ -97,7 +97,9 @@ async def eval_retrieval(rows: list[dict], settings, k: int) -> dict:
         pq = await qp.process(r["question"], history_of(r))
         hits = await retriever.search(pq.standalone, content_types=RETRIEVAL_TYPES.get(r["expected_intent"]),
                                       filters=pq.filters, top_k=settings.retrieval_top_k)
-        hits = await asyncio.to_thread(reranker.rerank, pq.standalone, hits, k) if reranker.enabled else hits[:k]
+        limit = getattr(settings, "rerank_candidates", 0)
+        hits = (await asyncio.to_thread(reranker.rerank, pq.standalone, hits[:limit] if limit else hits, k)
+                if reranker.enabled else hits[:k])
         kept, _dropped = apply_score_threshold(hits, settings.retrieval_score_threshold, drop_unscored_rrf=drop_rrf)
         return hits, kept
 
@@ -117,7 +119,8 @@ async def eval_retrieval(rows: list[dict], settings, k: int) -> dict:
         reciprocal.append(1 / rank if rank else 0.0)
         answerable += any(h.document_id in expected for h in kept)
         top1 += bool(kept) and kept[0].document_id in expected
-        entry = {"id": r["id"], "question": r["question"], "expected": sorted(expected), "got": _brief(hits)}
+        entry = {"id": r["id"], "question": r["question"], "expected": sorted(expected), "got": _brief(hits),
+                 "got_titles": [h.title for h in hits]}
         if rank is None:
             misses.append(entry)
         elif not kept:
@@ -128,7 +131,8 @@ async def eval_retrieval(rows: list[dict], settings, k: int) -> dict:
         hits, kept = await run(r)
         refusal_rows.append(hits)
         if kept:
-            false_accepts.append({"id": r["id"], "question": r["question"], "answered_with": _brief(kept)})
+            false_accepts.append({"id": r["id"], "question": r["question"], "answered_with": _brief(kept),
+                                  "answered_titles": [h.title for h in kept]})
     await client.close()
     n = len(scored)
     result = {"k": k, "n_scored": n, "n_refusal_cases": len(refusals), f"hit@{k}_pct": pct(in_topk, n),
@@ -136,7 +140,10 @@ async def eval_retrieval(rows: list[dict], settings, k: int) -> dict:
               "answerable_pct": pct(answerable, n), "top1_correct_pct": pct(top1, n),
               "false_accept_pct": pct(len(false_accepts), len(refusals)),
               "threshold": settings.retrieval_score_threshold,
-              "latency_ms_p50": round(statistics.median(latencies)) if latencies else 0}
+              "latency_ms_p50": round(statistics.median(latencies)) if latencies else 0,
+              "latency_ms_p95": round(sorted(latencies)[int(0.95 * (len(latencies) - 1))]) if latencies else 0,
+              "rerank_max_length": getattr(settings, "rerank_max_length", 512),
+              "rerank_candidates": getattr(settings, "rerank_candidates", 0)}
     if reranker.enabled:
         result["threshold_sweep"] = threshold_sweep(scored_rows, refusal_rows)
         result["rerank_score_of_correct_chunk"] = best_rerank_scores(scored_rows)

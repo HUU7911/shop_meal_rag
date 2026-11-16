@@ -30,7 +30,8 @@ async def build_retrieval_stack(settings):
     embedder = await asyncio.to_thread(EmbeddingService, settings.embedding_model, settings.embedding_dim,
                                        settings.embedding_device)
     reranker = await asyncio.to_thread(Reranker, settings.rerank_model, enabled=settings.rerank_enabled,
-                                       device=settings.embedding_device)
+                                       device=getattr(settings, "rerank_device", "") or settings.embedding_device,
+                                       max_length=getattr(settings, "rerank_max_length", 512))
     retriever = Retriever(client, embedder, collection=settings.qdrant_collection,
                           hybrid_enabled=settings.hybrid_enabled, top_k=settings.retrieval_top_k)
     return client, embedder, retriever, reranker

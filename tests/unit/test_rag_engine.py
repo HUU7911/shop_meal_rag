@@ -305,3 +305,22 @@ async def test_extractive_offtopic_after_order_question_does_not_leak_order_info
     res = await build_extractive(orders=orders).invoke(req("Giá bitcoin hôm nay", user=USER, history=history))
     assert res.fallback_reason == "OUT_OF_SCOPE" and res.intent is Intent.OUT_OF_SCOPE
     assert orders.tokens_seen == [] and "123" not in res.answer
+
+
+async def test_rerank_candidates_limits_how_many_chunks_reach_the_reranker():
+    class RecordingReranker:
+        enabled, seen = True, None
+
+        def rerank(self, question, hits, top_n):
+            self.seen = len(hits)
+            return hits[:top_n]
+
+    hits = [faq_hit(doc=f"d{i}", score=0.9 - i / 100) for i in range(5)]
+    engine = build_extractive(FakeRetriever(hits))
+    engine.reranker = RecordingReranker()
+    engine.s = make_settings(rerank_candidates=3)
+    await engine.invoke(req("Có hủy đơn được không?"))
+    assert engine.reranker.seen == 3
+    engine.s = make_settings()                                   # mặc định 0 = không giới hạn
+    await engine.invoke(req("Có hủy đơn được không?"))
+    assert engine.reranker.seen == 5

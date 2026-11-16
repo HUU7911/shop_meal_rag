@@ -193,8 +193,10 @@ class DefaultRAGEngine:
             log.warning("Truy xuất lỗi", exc_info=True)
             return [], True
         if hits and self.reranker.enabled:
+            limit = getattr(self.s, "rerank_candidates", 0)           # 0 = không giới hạn
             with timed(trace, "rerank"):
-                hits = await asyncio.to_thread(self.reranker.rerank, pq.standalone, hits, self.s.rerank_top_n)
+                hits = await asyncio.to_thread(self.reranker.rerank, pq.standalone, hits[:limit] if limit else hits,
+                                               self.s.rerank_top_n)
         else:
             hits = hits[: self.s.rerank_top_n]
         hits, dropped = self._apply_threshold(hits)
