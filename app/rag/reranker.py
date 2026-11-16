@@ -23,6 +23,18 @@ class Reranker:
             except Exception as exc:  # noqa: BLE001
                 raise ConfigurationError(f"Không nạp được reranker '{model_name}': {exc}") from exc
 
+    @property
+    def device_in_use(self) -> str:
+        """Thiết bị mà model THỰC SỰ nằm trên (không phải thiết bị được yêu cầu trong cấu hình)."""
+        if self._model is None:
+            return "disabled"
+        for getter in (lambda: self._model.model.device, lambda: self._model.device):
+            try:
+                return str(getter())
+            except Exception:  # noqa: BLE001 - khác biệt giữa các phiên bản sentence-transformers
+                continue
+        return "unknown"
+
     def rerank(self, question: str, hits: list[Hit], top_n: int) -> list[Hit]:
         if not self.enabled or self._model is None or not hits:
             return hits[:top_n]

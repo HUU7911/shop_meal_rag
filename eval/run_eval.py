@@ -95,22 +95,28 @@ async def eval_retrieval(rows: list[dict], settings, k: int) -> dict:
 
     async def run(r: dict):
         pq = await qp.process(r["question"], history_of(r))
+        t0 = time.perf_counter()
         hits = await retriever.search(pq.standalone, content_types=RETRIEVAL_TYPES.get(r["expected_intent"]),
                                       filters=pq.filters, top_k=settings.retrieval_top_k)
+        t1 = time.perf_counter()
         limit = getattr(settings, "rerank_candidates", 0)
         hits = (await asyncio.to_thread(reranker.rerank, pq.standalone, hits[:limit] if limit else hits, k)
                 if reranker.enabled else hits[:k])
+        t2 = time.perf_counter()
         kept, _dropped = apply_score_threshold(hits, settings.retrieval_score_threshold, drop_unscored_rrf=drop_rrf)
-        return hits, kept
+        return hits, kept, (t1 - t0) * 1000, (t2 - t1) * 1000
 
     scored = [r for r in rows if r.get("expected_doc_ids")]
     refusals = [r for r in rows if r.get("expect_no_context")]
     in_topk = answerable = top1 = 0
     reciprocal, latencies, misses, below_threshold, wrong_first, false_accepts = [], [], [], [], [], []
     scored_rows, refusal_rows = [], []
+    retrieve_ms, rerank_ms = [], []
     for r in scored:
         started = time.perf_counter()
-        hits, kept = await run(r)
+        hits, kept, t_retrieve, t_rerank = await run(r)
+        retrieve_ms.append(t_retrieve)
+        rerank_ms.append(t_rerank)
         latencies.append((time.perf_counter() - started) * 1000)
         expected = set(r["expected_doc_ids"])
         scored_rows.append((expected, hits))
@@ -128,7 +134,7 @@ async def eval_retrieval(rows: list[dict], settings, k: int) -> dict:
         elif kept[0].document_id not in expected:
             wrong_first.append({**entry, "bot_would_answer_with": _brief(kept)})
     for r in refusals:
-        hits, kept = await run(r)
+        hits, kept, *_ = await run(r)
         refusal_rows.append(hits)
         if kept:
             false_accepts.append({"id": r["id"], "question": r["question"], "answered_with": _brief(kept),
@@ -142,6 +148,12 @@ async def eval_retrieval(rows: list[dict], settings, k: int) -> dict:
               "threshold": settings.retrieval_score_threshold,
               "latency_ms_p50": round(statistics.median(latencies)) if latencies else 0,
               "latency_ms_p95": round(sorted(latencies)[int(0.95 * (len(latencies) - 1))]) if latencies else 0,
+              "devices": {"embedding_requested": _embedder.device,
+                          "rerank_actual": reranker.device_in_use},        # nếu 'cpu' dù đã đặt RERANK_DEVICE=cuda: cấu hình chưa được áp dụng
+              "latency_breakdown_ms": {                                    # biết thời gian nằm ở đâu: truy xuất (gồm embed câu hỏi) hay rerank
+                  "retrieve_p50": round(statistics.median(retrieve_ms)) if retrieve_ms else 0,
+                  "rerank_p50": round(statistics.median(rerank_ms)) if rerank_ms else 0,
+                  "rerank_p95": round(sorted(rerank_ms)[int(0.95 * (len(rerank_ms) - 1))]) if rerank_ms else 0},
               "rerank_max_length": getattr(settings, "rerank_max_length", 512),
               "rerank_candidates": getattr(settings, "rerank_candidates", 0)}
     if reranker.enabled:
