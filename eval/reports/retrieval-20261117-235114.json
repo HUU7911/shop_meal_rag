@@ -1,0 +1,275 @@
+{
+  "timestamp": "2026-11-17T23:51:14",
+  "mode": "retrieval",
+  "config": {
+    "embedding_model": "BAAI/bge-m3",
+    "hybrid": true,
+    "rerank": true,
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "top_k": 12,
+    "rerank_top_n": 4,
+    "threshold": 0.05,
+    "llm_model": "gemini-3.8-flash"
+  },
+  "metrics": {
+    "k": 4,
+    "n_scored": 54,
+    "n_refusal_cases": 0,
+    "hit@4_pct": 94.4,
+    "mrr": 0.935,
+    "answerable_pct": 92.6,
+    "top1_correct_pct": 90.7,
+    "false_accept_pct": 0.0,
+    "threshold": 0.05,
+    "latency_ms_p50": 1917,
+    "latency_ms_p95": 2183,
+    "devices": {
+      "embedding_requested": "cpu",
+      "rerank_actual": "cuda:0"
+    },
+    "latency_breakdown_ms": {
+      "retrieve_p50": 308,
+      "rerank_p50": 1578,
+      "rerank_p95": 1848
+    },
+    "rerank_max_length": 512,
+    "rerank_candidates": 0,
+    "threshold_sweep": [
+      {
+        "threshold": 0.02,
+        "correct_first_pct": 90.7,
+        "wrong_answer_pct": 7.4,
+        "no_answer_pct": 1.9,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.05,
+        "correct_first_pct": 90.7,
+        "wrong_answer_pct": 7.4,
+        "no_answer_pct": 1.9,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.1,
+        "correct_first_pct": 88.9,
+        "wrong_answer_pct": 7.4,
+        "no_answer_pct": 3.7,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.15,
+        "correct_first_pct": 85.2,
+        "wrong_answer_pct": 5.6,
+        "no_answer_pct": 9.3,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.2,
+        "correct_first_pct": 85.2,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 11.1,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.25,
+        "correct_first_pct": 85.2,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 11.1,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.3,
+        "correct_first_pct": 85.2,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 11.1,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.35,
+        "correct_first_pct": 85.2,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 11.1,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.4,
+        "correct_first_pct": 85.2,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 11.1,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.5,
+        "correct_first_pct": 83.3,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 13.0,
+        "false_accept_pct": 0.0
+      }
+    ],
+    "rerank_score_of_correct_chunk": [
+      0.791,
+      0.971,
+      0.0,
+      0.973,
+      0.115,
+      0.984,
+      0.997,
+      0.989,
+      0.076,
+      null,
+      0.982,
+      0.796,
+      0.969,
+      0.663,
+      0.979,
+      0.983,
+      null,
+      0.996,
+      0.993,
+      null,
+      0.973,
+      0.979,
+      0.995,
+      0.999,
+      0.993,
+      0.926,
+      0.107,
+      0.409,
+      0.997,
+      0.951,
+      0.983,
+      0.997,
+      0.984,
+      0.999,
+      0.986,
+      0.997,
+      0.972,
+      0.998,
+      0.998,
+      0.986,
+      0.967,
+      0.87,
+      0.977,
+      0.995,
+      0.929,
+      0.948,
+      0.986,
+      0.997,
+      0.88,
+      0.981,
+      0.985,
+      0.897,
+      0.994,
+      0.975
+    ],
+    "rerank_top_score_of_refusal_cases": [],
+    "misses_not_in_topk": [
+      {
+        "id": "nat010",
+        "question": "bao lâu thì đồ ăn tới",
+        "expected": [
+          "faq-order-005"
+        ],
+        "got": [
+          "delivery(s=0.500,r=0.733)",
+          "faq-edge-003(s=0.193,r=0.610)",
+          "faq-edge-010(s=0.375,r=0.221)",
+          "delivery(s=0.167,r=0.034)"
+        ],
+        "got_titles": [
+          "Chính sách giao hàng và xử lý sự cố",
+          "Đơn hàng bị giao trễ hơn 45 phút so với thời gian cam kết, quán có chính sách bồi thường gì không?",
+          "Tôi có thể đặt món trước từ sáng để giao đúng khung giờ trưa/tối hoặc hẹn ngày giao trước không?",
+          "Chính sách giao hàng và xử lý sự cố"
+        ]
+      },
+      {
+        "id": "nat017",
+        "question": "tra mot nua tien mat mot nua chuyen khoan",
+        "expected": [
+          "faq-edge-009"
+        ],
+        "got": [
+          "faq-edge-012(s=0.577,r=0.145)",
+          "privacy(s=0.200,r=0.052)",
+          "cancellation(s=0.167,r=0.040)",
+          "faq-service-003(s=0.500,r=0.011)"
+        ],
+        "got_titles": [
+          "Khi nhận hàng thanh toán tiền mặt (COD), tôi có được mở hộp kiểm tra đồ ăn trước khi trả tiền không?",
+          "Chính sách bảo mật thông tin khách hàng",
+          "Chính sách hủy đơn và hoàn tiền",
+          "Làm thế nào để hủy lịch đặt bàn đã đặt trước?"
+        ]
+      },
+      {
+        "id": "nat020",
+        "question": "ma giam gia khong dung duoc",
+        "expected": [
+          "faq-edge-007"
+        ],
+        "got": [
+          "faq-edge-015(s=0.182,r=0.177)",
+          "faq-edge-012(s=0.250,r=0.099)",
+          "faq-edge-005(s=0.500,r=0.035)",
+          "faq-menu-002(s=0.195,r=0.016)"
+        ],
+        "got_titles": [
+          "Tôi muốn tip (gửi tiền boa) thêm cho tài xế giao hàng thì có thực hiện qua ứng dụng được không?",
+          "Khi nhận hàng thanh toán tiền mặt (COD), tôi có được mở hộp kiểm tra đồ ăn trước khi trả tiền không?",
+          "Món ăn bị quá cay hoặc quán quên không đọc ghi chú 'không hành' của tôi thì xử lý thế nào?",
+          "Làm thế nào để xem các chương trình khuyến mãi, ưu đãi và voucher giảm giá?"
+        ]
+      }
+    ],
+    "found_but_below_threshold": [
+      {
+        "id": "nat003",
+        "question": "dat do an online kieu gi vay",
+        "expected": [
+          "faq-order-001"
+        ],
+        "got": [
+          "faq-order-001(s=0.625,r=0.000)",
+          "faq-edge-013(s=0.250,r=0.000)",
+          "faq-menu-002(s=0.146,r=0.000)",
+          "cancellation(s=0.500,r=0.000)"
+        ],
+        "got_titles": [
+          "Làm thế nào để đặt món ăn trực tuyến trên Shop Meal?",
+          "Nếu thức ăn có vấn đề về vệ sinh an toàn thực phẩm (có dị vật, mùi lạ, nghi ngộ độc) thì Shop Meal xử lý ra sao?",
+          "Làm thế nào để xem các chương trình khuyến mãi, ưu đãi và voucher giảm giá?",
+          "Chính sách hủy đơn và hoàn tiền"
+        ]
+      }
+    ],
+    "wrong_chunk_first": [
+      {
+        "id": "nat014",
+        "question": "thanh toán bằng những cách nào",
+        "expected": [
+          "faq-payment-001"
+        ],
+        "got": [
+          "faq-edge-009(s=0.833,r=0.727)",
+          "faq-payment-001(s=0.833,r=0.663)",
+          "faq-edge-015(s=0.171,r=0.354)",
+          "cancellation(s=0.500,r=0.054)"
+        ],
+        "got_titles": [
+          "Tôi có thể thanh toán kết hợp một nửa bằng tiền mặt và một nửa bằng chuyển khoản cho cùng một đơn hàng không?",
+          "Shop Meal hỗ trợ những phương thức thanh toán nào?",
+          "Tôi muốn tip (gửi tiền boa) thêm cho tài xế giao hàng thì có thực hiện qua ứng dụng được không?",
+          "Chính sách hủy đơn và hoàn tiền"
+        ],
+        "bot_would_answer_with": [
+          "faq-edge-009(s=0.833,r=0.727)",
+          "faq-payment-001(s=0.833,r=0.663)",
+          "faq-edge-015(s=0.171,r=0.354)",
+          "cancellation(s=0.500,r=0.054)"
+        ]
+      }
+    ],
+    "false_accepts": []
+  }
+}

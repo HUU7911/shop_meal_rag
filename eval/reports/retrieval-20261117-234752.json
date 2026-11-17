@@ -1,0 +1,165 @@
+{
+  "timestamp": "2026-11-17T23:47:52",
+  "mode": "retrieval",
+  "config": {
+    "embedding_model": "BAAI/bge-m3",
+    "hybrid": true,
+    "rerank": true,
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "top_k": 32,
+    "rerank_top_n": 4,
+    "threshold": 0.05,
+    "llm_model": "gemini-3.8-flash"
+  },
+  "metrics": {
+    "k": 4,
+    "n_scored": 27,
+    "n_refusal_cases": 7,
+    "hit@4_pct": 100.0,
+    "mrr": 1.0,
+    "answerable_pct": 100.0,
+    "top1_correct_pct": 100.0,
+    "false_accept_pct": 14.3,
+    "threshold": 0.05,
+    "latency_ms_p50": 1868,
+    "latency_ms_p95": 2037,
+    "devices": {
+      "embedding_requested": "cpu",
+      "rerank_actual": "cuda:0"
+    },
+    "latency_breakdown_ms": {
+      "retrieve_p50": 357,
+      "rerank_p50": 1429,
+      "rerank_p95": 1607
+    },
+    "rerank_max_length": 128,
+    "rerank_candidates": 0,
+    "threshold_sweep": [
+      {
+        "threshold": 0.02,
+        "correct_first_pct": 100.0,
+        "wrong_answer_pct": 0.0,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.05,
+        "correct_first_pct": 100.0,
+        "wrong_answer_pct": 0.0,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.1,
+        "correct_first_pct": 100.0,
+        "wrong_answer_pct": 0.0,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.15,
+        "correct_first_pct": 100.0,
+        "wrong_answer_pct": 0.0,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.2,
+        "correct_first_pct": 100.0,
+        "wrong_answer_pct": 0.0,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.25,
+        "correct_first_pct": 100.0,
+        "wrong_answer_pct": 0.0,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.3,
+        "correct_first_pct": 100.0,
+        "wrong_answer_pct": 0.0,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.35,
+        "correct_first_pct": 100.0,
+        "wrong_answer_pct": 0.0,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.4,
+        "correct_first_pct": 100.0,
+        "wrong_answer_pct": 0.0,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.5,
+        "correct_first_pct": 100.0,
+        "wrong_answer_pct": 0.0,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 0.0
+      }
+    ],
+    "rerank_score_of_correct_chunk": [
+      1.0,
+      0.995,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.999,
+      0.997,
+      1.0,
+      0.996,
+      0.999,
+      0.999,
+      1.0,
+      1.0,
+      0.999,
+      0.997,
+      1.0,
+      0.995,
+      1.0,
+      0.998,
+      1.0,
+      1.0,
+      0.989,
+      0.994,
+      0.984
+    ],
+    "rerank_top_score_of_refusal_cases": [
+      0.011,
+      0.017,
+      0.007,
+      0.0,
+      0.205,
+      0.001,
+      0.0
+    ],
+    "misses_not_in_topk": [],
+    "found_but_below_threshold": [],
+    "wrong_chunk_first": [],
+    "false_accepts": [
+      {
+        "id": "q054",
+        "question": "Đổi trả món ăn như thế nào?",
+        "answered_with": [
+          "faq-order-004(s=0.556,r=0.205)",
+          "cancellation(s=0.111,r=0.101)"
+        ],
+        "answered_titles": [
+          "Làm thế nào để thay đổi hoặc xóa bớt món trong đơn hàng đã đặt?",
+          "Chính sách hủy đơn và hoàn tiền"
+        ]
+      }
+    ]
+  }
+}

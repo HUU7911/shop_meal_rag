@@ -1,0 +1,223 @@
+{
+  "timestamp": "2026-11-17T09:45:30",
+  "mode": "retrieval",
+  "config": {
+    "embedding_model": "BAAI/bge-m3",
+    "hybrid": true,
+    "rerank": true,
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "top_k": 8,
+    "rerank_top_n": 4,
+    "threshold": 0.05,
+    "llm_model": "gemini-3.8-flash"
+  },
+  "metrics": {
+    "k": 4,
+    "n_scored": 27,
+    "n_refusal_cases": 7,
+    "hit@4_pct": 88.9,
+    "mrr": 0.889,
+    "answerable_pct": 88.9,
+    "top1_correct_pct": 88.9,
+    "false_accept_pct": 14.3,
+    "threshold": 0.05,
+    "latency_ms_p50": 1515,
+    "latency_ms_p95": 1650,
+    "devices": {
+      "embedding_requested": "cpu",
+      "rerank_actual": "cuda:0"
+    },
+    "latency_breakdown_ms": {
+      "retrieve_p50": 314,
+      "rerank_p50": 1196,
+      "rerank_p95": 1317
+    },
+    "rerank_max_length": 512,
+    "rerank_candidates": 0,
+    "threshold_sweep": [
+      {
+        "threshold": 0.02,
+        "correct_first_pct": 88.9,
+        "wrong_answer_pct": 11.1,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 42.9
+      },
+      {
+        "threshold": 0.05,
+        "correct_first_pct": 88.9,
+        "wrong_answer_pct": 11.1,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.1,
+        "correct_first_pct": 88.9,
+        "wrong_answer_pct": 11.1,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.15,
+        "correct_first_pct": 88.9,
+        "wrong_answer_pct": 11.1,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.2,
+        "correct_first_pct": 88.9,
+        "wrong_answer_pct": 11.1,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.25,
+        "correct_first_pct": 88.9,
+        "wrong_answer_pct": 11.1,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.3,
+        "correct_first_pct": 88.9,
+        "wrong_answer_pct": 7.4,
+        "no_answer_pct": 3.7,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.35,
+        "correct_first_pct": 88.9,
+        "wrong_answer_pct": 7.4,
+        "no_answer_pct": 3.7,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.4,
+        "correct_first_pct": 88.9,
+        "wrong_answer_pct": 7.4,
+        "no_answer_pct": 3.7,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.5,
+        "correct_first_pct": 88.9,
+        "wrong_answer_pct": 7.4,
+        "no_answer_pct": 3.7,
+        "false_accept_pct": 0.0
+      }
+    ],
+    "rerank_score_of_correct_chunk": [
+      1.0,
+      0.995,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.997,
+      1.0,
+      0.997,
+      1.0,
+      0.998,
+      1.0,
+      0.999,
+      1.0,
+      1.0,
+      1.0,
+      0.997,
+      1.0,
+      0.998,
+      1.0,
+      0.999,
+      1.0,
+      1.0,
+      null,
+      null,
+      null
+    ],
+    "rerank_top_score_of_refusal_cases": [
+      0.027,
+      0.035,
+      0.01,
+      0.0,
+      0.263,
+      0.006,
+      0.0
+    ],
+    "misses_not_in_topk": [
+      {
+        "id": "kb042",
+        "question": "toi co the huy don hang truc tuyen da dat khong va lam nhu the nao?",
+        "expected": [
+          "faq-order-003"
+        ],
+        "got": [
+          "faq-edge-010(s=0.444,r=0.751)",
+          "faq-order-002(s=0.250,r=0.674)",
+          "faq-service-003(s=0.392,r=0.637)",
+          "faq-service-002(s=0.200,r=0.436)"
+        ],
+        "got_titles": [
+          "Tôi có thể đặt món trước từ sáng để giao đúng khung giờ trưa/tối hoặc hẹn ngày giao trước không?",
+          "Làm thế nào để theo dõi và kiểm tra trạng thái đơn hàng của tôi?",
+          "Làm thế nào để hủy lịch đặt bàn đã đặt trước?",
+          "Tôi có thể thay đổi thời gian hoặc số lượng người trong lịch đặt bàn không?"
+        ]
+      },
+      {
+        "id": "kb064",
+        "question": "lam the nao de lien he voi bo phan cham soc khach hang cua shop meal?",
+        "expected": [
+          "faq-support-001"
+        ],
+        "got": [
+          "faq-service-001(s=0.317,r=0.933)",
+          "faq-payment-001(s=0.268,r=0.820)",
+          "faq-menu-003(s=0.392,r=0.720)",
+          "faq-support-005(s=0.500,r=0.676)"
+        ],
+        "got_titles": [
+          "Làm thế nào để đặt bàn trước tại nhà hàng Shop Meal?",
+          "Shop Meal hỗ trợ những phương thức thanh toán nào?",
+          "Làm thế nào để kiểm tra thông tin về chất gây dị ứng và thành phần trong món ăn?",
+          "Làm thế nào để tìm cửa hàng hoặc chi nhánh Shop Meal gần tôi nhất?"
+        ]
+      },
+      {
+        "id": "kb068",
+        "question": "lam the nao de gui khieu nai ve chat luong dich vu hoac thai do phuc vu?",
+        "expected": [
+          "faq-support-003"
+        ],
+        "got": [
+          "privacy(s=0.250,r=0.256)",
+          "faq-support-002(s=1.000,r=0.207)",
+          "faq-menu-001(s=0.298,r=0.118)",
+          "privacy(s=0.333,r=0.029)"
+        ],
+        "got_titles": [
+          "Chính sách bảo mật thông tin khách hàng",
+          "Tôi muốn nói chuyện hoặc chat trực tiếp với nhân viên tư vấn thì làm thế nào?",
+          "Làm thế nào để xem thực đơn hôm nay và danh sách các món ăn?",
+          "Chính sách bảo mật thông tin khách hàng"
+        ]
+      }
+    ],
+    "found_but_below_threshold": [],
+    "wrong_chunk_first": [],
+    "false_accepts": [
+      {
+        "id": "q054",
+        "question": "Đổi trả món ăn như thế nào?",
+        "answered_with": [
+          "faq-order-004(s=0.556,r=0.263)",
+          "delivery(s=0.500,r=0.065)"
+        ],
+        "answered_titles": [
+          "Làm thế nào để thay đổi hoặc xóa bớt món trong đơn hàng đã đặt?",
+          "Chính sách giao hàng và xử lý sự cố"
+        ]
+      }
+    ]
+  }
+}

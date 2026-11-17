@@ -1,0 +1,185 @@
+{
+  "timestamp": "2026-11-17T15:09:55",
+  "mode": "retrieval",
+  "config": {
+    "embedding_model": "BAAI/bge-m3",
+    "hybrid": true,
+    "rerank": true,
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "top_k": 15,
+    "rerank_top_n": 4,
+    "threshold": 0.05,
+    "llm_model": "gemini-3.8-flash"
+  },
+  "metrics": {
+    "k": 4,
+    "n_scored": 27,
+    "n_refusal_cases": 7,
+    "hit@4_pct": 96.3,
+    "mrr": 0.963,
+    "answerable_pct": 96.3,
+    "top1_correct_pct": 96.3,
+    "false_accept_pct": 14.3,
+    "threshold": 0.05,
+    "latency_ms_p50": 3795,
+    "latency_ms_p95": 4403,
+    "devices": {
+      "embedding_requested": "cpu",
+      "rerank_actual": "cuda:0"
+    },
+    "latency_breakdown_ms": {
+      "retrieve_p50": 572,
+      "rerank_p50": 3257,
+      "rerank_p95": 3798
+    },
+    "rerank_max_length": 512,
+    "rerank_candidates": 0,
+    "threshold_sweep": [
+      {
+        "threshold": 0.02,
+        "correct_first_pct": 96.3,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 42.9
+      },
+      {
+        "threshold": 0.05,
+        "correct_first_pct": 96.3,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.1,
+        "correct_first_pct": 96.3,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.15,
+        "correct_first_pct": 96.3,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.2,
+        "correct_first_pct": 96.3,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.25,
+        "correct_first_pct": 96.3,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 14.3
+      },
+      {
+        "threshold": 0.3,
+        "correct_first_pct": 96.3,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.35,
+        "correct_first_pct": 96.3,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.4,
+        "correct_first_pct": 96.3,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 0.0
+      },
+      {
+        "threshold": 0.5,
+        "correct_first_pct": 96.3,
+        "wrong_answer_pct": 3.7,
+        "no_answer_pct": 0.0,
+        "false_accept_pct": 0.0
+      }
+    ],
+    "rerank_score_of_correct_chunk": [
+      1.0,
+      0.995,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.997,
+      1.0,
+      0.997,
+      1.0,
+      0.998,
+      1.0,
+      0.999,
+      1.0,
+      1.0,
+      1.0,
+      0.997,
+      1.0,
+      0.998,
+      1.0,
+      0.999,
+      1.0,
+      1.0,
+      0.996,
+      0.996,
+      null
+    ],
+    "rerank_top_score_of_refusal_cases": [
+      0.027,
+      0.035,
+      0.014,
+      0.0,
+      0.263,
+      0.006,
+      0.0
+    ],
+    "misses_not_in_topk": [
+      {
+        "id": "kb068",
+        "question": "lam the nao de gui khieu nai ve chat luong dich vu hoac thai do phuc vu?",
+        "expected": [
+          "faq-support-003"
+        ],
+        "got": [
+          "faq-support-004(s=0.125,r=0.649)",
+          "privacy(s=0.250,r=0.256)",
+          "faq-support-002(s=1.000,r=0.207)",
+          "faq-menu-001(s=0.298,r=0.118)"
+        ],
+        "got_titles": [
+          "Làm thế nào để để lại đánh giá và nhận xét về món ăn sau khi dùng bữa?",
+          "Chính sách bảo mật thông tin khách hàng",
+          "Tôi muốn nói chuyện hoặc chat trực tiếp với nhân viên tư vấn thì làm thế nào?",
+          "Làm thế nào để xem thực đơn hôm nay và danh sách các món ăn?"
+        ]
+      }
+    ],
+    "found_but_below_threshold": [],
+    "wrong_chunk_first": [],
+    "false_accepts": [
+      {
+        "id": "q054",
+        "question": "Đổi trả món ăn như thế nào?",
+        "answered_with": [
+          "faq-order-004(s=0.556,r=0.263)",
+          "delivery(s=0.500,r=0.065)"
+        ],
+        "answered_titles": [
+          "Làm thế nào để thay đổi hoặc xóa bớt món trong đơn hàng đã đặt?",
+          "Chính sách giao hàng và xử lý sự cố"
+        ]
+      }
+    ]
+  }
+}
