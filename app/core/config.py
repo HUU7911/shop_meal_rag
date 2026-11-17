@@ -50,6 +50,9 @@ class Settings(BaseSettings):
     embedding_device: str = "cpu"
     rerank_enabled: bool = True
     rerank_model: str = "BAAI/bge-reranker-v2-m3"
+    rerank_device: str = ""                   # "" = dùng EMBEDDING_DEVICE
+    rerank_max_length: int = 512
+    rerank_candidates: int = 0                # 0 = rerank toàn bộ top_k
 
     # RAG
     rag_enabled: bool = False                 # bật khi Qdrant/LLM/model đã sẵn sàng
