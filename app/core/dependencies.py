@@ -1,12 +1,13 @@
-"""Dependency Injection. Khởi tạo tài nguyên nặng một lần trong lifespan (app.state)."""
-from fastapi import Request
+from collections.abc import AsyncIterator
 
-# TODO(Member 01): cung cấp
-#   - get_db_session()        (AsyncSession)
-#   - get_redis()
-#   - get_chat_service()      (ghép ChatService với các repository + RAGEngine)
-# TODO(Member 02): RAGEngine, EmbeddingService, Reranker được tạo trong lifespan và gắn vào app.state.
+from fastapi import Request
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 def get_rag_engine(request: Request):
     return request.app.state.rag_engine
+
+
+async def get_db_session(request: Request) -> AsyncIterator[AsyncSession]:
+    async with request.app.state.db_sessionmaker() as session:
+        yield session

@@ -1,5 +1,6 @@
-"""Middleware: X-Request-ID, đo thời gian xử lý. (Rate limit: xem TODO)"""
+"""Middleware: request ID và thời gian xử lý."""
 import logging
+import re
 import time
 import uuid
 
@@ -10,20 +11,34 @@ from app.core.logging import request_id_ctx
 
 log = logging.getLogger("app.http")
 
+REQUEST_ID_PATTERN = re.compile(r"^[a-zA-Z0-9._-]{1,64}$")
+
 
 class RequestIdMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        rid = request.headers.get("X-Request-ID") or uuid.uuid4().hex
-        request.state.request_id = rid
-        token = request_id_ctx.set(rid)
-        start = time.perf_counter()
+        incoming_id = request.headers.get("X-Request-ID", "")
+
+        if REQUEST_ID_PATTERN.fullmatch(incoming_id):
+            request_id = incoming_id
+        else:
+            request_id = uuid.uuid4().hex
+
+        request.state.request_id = request_id
+        context_token = request_id_ctx.set(request_id)
+        start_time = time.perf_counter()
+
         try:
             response = await call_next(request)
+            response.headers["X-Request-ID"] = request_id
+            return response
         finally:
-            elapsed_ms = int((time.perf_counter() - start) * 1000)
-            log.info("%s %s %dms", request.method, request.url.path, elapsed_ms)
-            request_id_ctx.reset(token)
-        response.headers["X-Request-ID"] = rid
-        return response
+            elapsed_ms = round((time.perf_counter() - start_time) * 1000, 2)
 
-# TODO(Member 01): RateLimitMiddleware / dependency dùng Redis (sliding window theo user_id/IP).
+            log.info(
+                "%s %s completed in %.2fms",
+                request.method,
+                request.url.path,
+                elapsed_ms,
+            )
+
+            request_id_ctx.reset(context_token)

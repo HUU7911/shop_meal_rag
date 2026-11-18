@@ -74,8 +74,10 @@ class Settings(BaseSettings):
     llm_timeout_seconds: int = 30
     llm_max_retries: int = 2
     llm_max_output_tokens: int = 800
-    llm_reasoning_effort: str = ""          # "" = không gửi; vd. none|low|medium|high (Gemini 2.5, o-series)
-    llm_stream_usage: bool = True            # gửi stream_options.include_usage; tắt nếu máy chủ trả HTTP 400
+    # Để trống nếu không gửi reasoning_effort.
+    llm_reasoning_effort: str = ""
+    # Tắt nếu LLM server không hỗ trợ stream_options.include_usage.
+    llm_stream_usage: bool = True
     llm_fallback_provider: str = ""
     llm_fallback_model: str = ""
 
