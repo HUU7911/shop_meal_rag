@@ -1,6 +1,7 @@
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 
-from app.services.health_service import HealthService
+from app.core.dependencies import HealthServiceDep
 
 router = APIRouter()
 
@@ -12,6 +13,7 @@ async def liveness() -> dict:
 
 
 @router.get("/health/ready")
-async def readiness() -> dict:
-    """Readiness: kiểm tra Qdrant, Redis, MySQL, LLM."""
-    return await HealthService().check_all()
+async def readiness(service: HealthServiceDep) -> JSONResponse:
+    """Readiness: ping MySQL, Redis, Qdrant; kiểm tra cấu hình LLM. 503 khi thiếu phụ thuộc bắt buộc."""
+    report = await service.check_all()
+    return JSONResponse(report, status_code=503 if report["status"] == "unavailable" else 200)

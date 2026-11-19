@@ -6,10 +6,17 @@ class AppError(Exception):
     code = "INTERNAL_ERROR"
     status_code = 500
 
-    def __init__(self, message: str = "", *, details: dict | None = None):
+    def __init__(
+        self,
+        message: str = "",
+        *,
+        details: dict | None = None,
+        headers: dict[str, str] | None = None,
+    ):
         super().__init__(message or self.code)
         self.message = message or self.code
         self.details = details if details is not None else {}
+        self.headers = headers if headers is not None else {}  # vd. Retry-After cho 429
 
 
 class ConfigurationError(AppError):
@@ -35,6 +42,11 @@ class PermissionDenied(AppError):
 class NotFoundError(AppError):
     code = "NOT_FOUND"
     status_code = 404
+
+
+class ConflictError(AppError):
+    code = "CONFLICT"
+    status_code = 409
 
 
 class ConversationError(AppError):

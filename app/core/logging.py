@@ -9,6 +9,8 @@ request_id_ctx: contextvars.ContextVar[str] = contextvars.ContextVar(
 
 _PATTERNS = [
     (re.compile(r"(?i)(bearer\s+)[A-Za-z0-9._\-]+"), r"\1***"),
+    (re.compile(r"eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*"), "***jwt***"),
+    (re.compile(r"(?i)(x-internal-key[\"':=\s]+)[^\s,;\"']+"), r"\1***"),
     (re.compile(r"\b\d{9,16}\b"), "***"),
     (re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+"), "***@***"),
 ]

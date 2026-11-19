@@ -1,6 +1,6 @@
 from enum import StrEnum
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from app.schemas.common_schema import CamelModel
 
@@ -23,9 +23,24 @@ class SourceType(StrEnum):
 
 
 class ChatRequest(CamelModel):
-    conversation_id: str | None = None
-    # Giới hạn độ dài thực tế được kiểm tra thêm theo settings.message_max_length
+    # id do server sinh ("c_" + 32 hex = 34 ký tự); giới hạn khớp cột conversations.id
+    conversation_id: str | None = Field(default=None, max_length=40)
+    # Trần cứng 4000 ở đây; giới hạn thực tế settings.message_max_length do API kiểm tra (422)
     message: str = Field(min_length=1, max_length=4000)
+
+    @field_validator("conversation_id", mode="before")
+    @classmethod
+    def _blank_conversation_id_is_none(cls, v):
+        # Frontend đôi khi gửi "" thay vì null ở lượt đầu
+        return None if isinstance(v, str) and not v.strip() else v
+
+    @field_validator("message")
+    @classmethod
+    def _message_not_blank(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("message không được để trống")
+        return v
 
 
 class SourceItem(CamelModel):

@@ -69,6 +69,20 @@ services:
       timeout: 5s
       retries: 10
 
+  # Chạy migration một lần rồi thoát; chatbot chỉ khởi động sau khi migration thành công.
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shop-meal-rag-migrate
+    restart: "no"
+    env_file: [.env]
+    environment: *app-env
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      mysql: { condition: service_healthy }
+    networks: [shop-meal-rag-network]
+
   chatbot:
     build:
       context: .
@@ -78,10 +92,12 @@ services:
     env_file: [.env]
     environment: *app-env
     ports:
-      - "8000:8000"
+      # Chỉ bind localhost. Production: bỏ `ports`, để Gateway gọi qua mạng nội bộ (docs/SECURITY.md)
+      - "127.0.0.1:8000:8000"
     volumes:
       - model_cache:/models
     depends_on:
+      migrate: { condition: service_completed_successfully }
       mysql: { condition: service_healthy }
       redis: { condition: service_healthy }
       qdrant: { condition: service_healthy }

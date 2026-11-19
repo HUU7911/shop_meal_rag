@@ -113,6 +113,32 @@ class Settings(BaseSettings):
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
 
 
+_PLACEHOLDER_PREFIX = "change"
+
+
+def validate_production_settings(settings: Settings) -> None:
+    """Từ chối khởi động production với cấu hình bảo mật yếu (docs/SECURITY.md)."""
+    from app.core.errors import ConfigurationError
+
+    if settings.app_env.lower() != "production":
+        return
+    secrets = {
+        "INTERNAL_API_KEY": settings.internal_api_key.get_secret_value(),
+        "MYSQL_PASSWORD": settings.mysql_password.get_secret_value(),
+        "REDIS_PASSWORD": settings.redis_password.get_secret_value(),
+        "QDRANT_API_KEY": settings.qdrant_api_key.get_secret_value(),
+    }
+    weak = [k for k, v in secrets.items() if not v or v.lower().startswith(_PLACEHOLDER_PREFIX)]
+    if weak:
+        raise ConfigurationError(f"Production: cần đặt giá trị thật cho {', '.join(weak)}.")
+    if not (settings.jwt_public_key or settings.jwt_jwks_url):
+        raise ConfigurationError("Production: cần JWT_PUBLIC_KEY hoặc JWT_JWKS_URL.")
+    if "*" in settings.cors_origin_list:
+        raise ConfigurationError("Production: CORS_ORIGINS không được là '*'.")
+    if not settings.rag_enabled:
+        raise ConfigurationError("Production: RAG_ENABLED phải bật (không dùng MockRAGEngine).")
+
+
 @lru_cache
 def get_settings() -> Settings:
     return Settings()

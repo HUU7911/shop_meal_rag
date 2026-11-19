@@ -1,4 +1,5 @@
 """Xác thực JWT và trích xuất người dùng hiện tại."""
+import hmac
 from dataclasses import dataclass, field
 from functools import lru_cache
 
@@ -15,7 +16,7 @@ from app.core.errors import AuthenticationError, ConfigurationError
 class CurrentUser:
     user_id: str | None
     roles: tuple[str, ...] = field(default_factory=tuple)
-    token: str | None = None
+    token: str | None = field(default=None, repr=False)   # không để lộ token trong log/repr
 
     @property
     def is_guest(self) -> bool:
@@ -86,7 +87,10 @@ def decode_jwt(token: str) -> dict:
         if not all(isinstance(role, str) for role in roles):
             raise AuthenticationError("JWT roles không hợp lệ.")
 
-        claims["roles"] = [role.upper() for role in roles]
+        # Spring Security thường prefix "ROLE_" -> chuẩn hóa về ADMIN, USER...
+        claims["roles"] = [
+            role.upper().removeprefix("ROLE_") for role in roles
+        ]
         return claims
 
     except AuthenticationError:
@@ -136,3 +140,27 @@ def require_login(user: CurrentUser) -> CurrentUser:
         )
 
     return user
+
+
+def is_valid_internal_key(provided: str | None) -> bool:
+    """So khớp X-Internal-Key theo thời gian không đổi (chống timing attack)."""
+    configured = get_settings().internal_api_key.get_secret_value()
+    if not configured or not provided:
+        return False
+    return hmac.compare_digest(provided.encode("utf-8"), configured.encode("utf-8"))
+
+
+def client_identity(request: Request, user: CurrentUser) -> str:
+    """Khóa định danh cho rate limit: user_id nếu đã đăng nhập, ngược lại IP client.
+
+    X-Forwarded-For chỉ được tin khi TRUST_GATEWAY_USER_HEADER=true (chatbot không public ra ngoài
+    Gateway) - nếu không, client có thể giả header để né rate limit.
+    """
+    if user.user_id:
+        return f"u:{user.user_id}"
+    if get_settings().trust_gateway_user_header:
+        forwarded = request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+        if forwarded:
+            return f"ip:{forwarded[:64]}"
+    host = request.client.host if request.client else "unknown"
+    return f"ip:{host}"
