@@ -65,7 +65,6 @@ def to_vnd(number: str, unit: str | None) -> int:
         value *= 1_000          # "dưới 50" gần như chắc chắn là 50 nghìn
     return int(round(value))
 
-
 def extract_filters(question: str) -> dict:
     q = strip_accents(question)
     filters: dict = {}
@@ -87,6 +86,33 @@ def extract_filters(question: str) -> dict:
             break
     return filters
 
+_PRICE_COMPARATORS = {("duoi",), ("tren",), ("toi", "da"), ("toi", "thieu"), ("khong", "qua"), ("nho", "hon"),
+                      ("lon", "hon"), ("re", "hon"), ("it", "hon"), ("it", "nhat"), ("tu",), ("den",), ("khoang",)}
+_PRICE_UNITS = {"nghin", "ngan", "k", "tr", "trieu", "d", "dong", "vnd"}
+_NUMBER_TOKEN = re.compile(r"^\d[\d.,]*(?:k|tr|d|vnd|nghin|ngan|trieu)?$")
+# Từ đệm của câu hỏi (không mô tả món). KHÔNG đưa "mon"/"an"/"do": là một phần tên món/danh mục.
+_FILLER = {"co", "khong", "nao", "gi", "la", "bao", "nhieu", "gia", "tien", "cho", "minh", "toi", "xem", "muon",
+           "tim", "shop", "giup", "nhe", "nha", "oi", "voi", "duoc", "con", "hang", "het", "may"}
+
+
+def semantic_query(question: str) -> str:
+    """Phần NỘI DUNG của câu hỏi sản phẩm: bỏ điều kiện giá, từ hỏi tồn kho và từ đệm.
+    "Có trà đào nào dưới 50 nghìn không?" -> "trà đào". Không còn gì sau khi bỏ -> trả câu gốc."""
+    original = question.split()
+    plain = [strip_accents(t.lower()).strip("?!.,;:()\"'") for t in original]
+    drop: set[int] = set()
+    for i in range(len(plain)):
+        for comparator in _PRICE_COMPARATORS:
+            n = len(comparator)
+            if tuple(plain[i:i + n]) == comparator and i + n < len(plain) and _NUMBER_TOKEN.match(plain[i + n]):
+                drop.update(range(i, i + n + 1))
+                if i + n + 1 < len(plain) and plain[i + n + 1] in _PRICE_UNITS:
+                    drop.add(i + n + 1)
+    for i, token in enumerate(plain):
+        if _NUMBER_TOKEN.match(token) or token in _FILLER or (token in _PRICE_UNITS and i - 1 in drop):
+            drop.add(i)
+    kept = [o for i, o in enumerate(original) if i not in drop]
+    return " ".join(kept).strip("?!.,; ") or question
 
 def looks_like_followup(question: str) -> bool:
     q = strip_accents(question)

@@ -27,6 +27,7 @@ from app.rag.types import (Hit, RAGEvent, RAGRequest, RAGResult, RAGTrace, Retri
                            ToolResult)
 from app.rag.utils import apply_score_threshold, timed
 from app.schemas.chat_schema import Intent, SourceItem
+from app.rag.query_processor import semantic_query
 
 log = logging.getLogger("app.rag.engine")
 _RETRIEVAL_ERRORS = (EmbeddingError, VectorDatabaseError, RetrievalError)
@@ -185,17 +186,21 @@ class DefaultRAGEngine:
 
     # ================= các bước con =================
     async def _retrieve(self, pq, content_types: list[str], trace: RAGTrace) -> tuple[list[Hit], bool]:
+        is_product = content_types == ["PRODUCT"]
+        filters = pq.filters if is_product else {
+            k: v for k, v in pq.filters.items() if k != "category"}  # danh mục MÓN không áp cho FAQ/Policy
+        query = semantic_query(pq.standalone) if is_product else pq.standalone  # bỏ điều kiện giá/từ đệm
         try:
-            with timed(trace, "retrieve"):          # gồm cả thời gian embed câu hỏi
-                hits = await self.retriever.search(pq.standalone, content_types=content_types,
-                                                   filters=pq.filters, top_k=self.s.retrieval_top_k)
+            with timed(trace, "retrieve"):  # gồm cả thời gian embed câu hỏi
+                hits = await self.retriever.search(query, content_types=content_types,
+                                                   filters=filters, top_k=self.s.retrieval_top_k)
         except _RETRIEVAL_ERRORS:
             log.warning("Truy xuất lỗi", exc_info=True)
             return [], True
         if hits and self.reranker.enabled:
-            limit = getattr(self.s, "rerank_candidates", 0)           # 0 = không giới hạn
+            limit = getattr(self.s, "rerank_candidates", 0)  # 0 = không giới hạn
             with timed(trace, "rerank"):
-                hits = await asyncio.to_thread(self.reranker.rerank, pq.standalone, hits[:limit] if limit else hits,
+                hits = await asyncio.to_thread(self.reranker.rerank, query, hits[:limit] if limit else hits,
                                                self.s.rerank_top_n)
         else:
             hits = hits[: self.s.rerank_top_n]

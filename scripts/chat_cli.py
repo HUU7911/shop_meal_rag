@@ -13,6 +13,7 @@ import argparse
 import asyncio
 import sys
 import uuid
+from pathlib import Path
 
 from app.core.config import get_settings
 from app.rag.factory import build_rag_engine
@@ -53,8 +54,14 @@ async def run(args) -> int:
         products, orders = ProductClient(), OrderClient()
     else:
         from scripts.demo_data import DemoOrderClient, DemoProductClient
-        products, orders = DemoProductClient(), DemoOrderClient()
-        print("(Đang dùng dữ liệu sản phẩm/đơn hàng GIẢ từ scripts/demo_data.py)")
+        orders = DemoOrderClient()
+        if args.demo_products or not Path(args.products_file).exists():
+            products = DemoProductClient()
+            print("(Đang dùng 4 sản phẩm GIẢ từ scripts/demo_data.py; đơn hàng cũng là dữ liệu giả)")
+        else:
+            from app.integrations.json_product_client import JsonProductClient
+            products = JsonProductClient(args.products_file)
+            print(f"(Sản phẩm đọc từ {args.products_file}; đơn hàng là dữ liệu GIẢ từ scripts/demo_data.py)")
 
     print("Đang nạp model (lần đầu có thể lâu)...")
     engine, close = await build_rag_engine(settings, products, orders)
@@ -117,6 +124,8 @@ def main() -> None:
     ap.add_argument("--stream", action="store_true")
     ap.add_argument("--debug", action="store_true")
     ap.add_argument("--real-clients", action="store_true")
+    ap.add_argument("--products-file", default="data/products/food.json", help="JSON sản phẩm (mặc định food.json)")
+    ap.add_argument("--demo-products", action="store_true", help="dùng 4 sản phẩm giả thay cho file")
     sys.exit(asyncio.run(run(ap.parse_args())))
 
 
