@@ -2,17 +2,16 @@
 (không tự gọi HTTP trực tiếp). Trả về danh sách bản ghi thô (dict).
 """
 import logging
-from collections.abc import AsyncIterator
 from typing import Any
 
 from app.integrations.product_client import ProductClient, ProductInfo
-
+from app.integrations.product_source import create_product_client
 log = logging.getLogger("app.ingestion.loaders.product")
 
 
 class ProductLoader:
     def __init__(self, client: ProductClient | None = None):
-        self.client = client or ProductClient()
+        self.client = client or create_product_client()
 
     async def load_all(self, page_size: int = 100) -> list[dict[str, Any]]:
         records: list[dict[str, Any]] = []

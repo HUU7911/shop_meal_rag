@@ -5,11 +5,12 @@ import logging
 from typing import Any
 
 from app.core.config import get_settings
-from app.ingestion.chunking import chunk_faq, chunk_policy
+from app.ingestion.chunking import chunk_faq, chunk_policy, chunk_product
 from app.ingestion.cleaner import clean_record
 from app.ingestion.indexing import Indexer
 from app.ingestion.loaders.faq_loader import FAQLoader
 from app.ingestion.loaders.policy_loader import PolicyLoader
+from app.ingestion.loaders.product_loader import ProductLoader
 from app.ingestion.payload import ChunkPayload
 
 log = logging.getLogger("app.ingestion.pipeline")
@@ -39,6 +40,7 @@ async def run(mode: str = "incremental") -> dict[str, Any]:
     log.info("Bắt đầu nạp dữ liệu (mode=%s)...", mode)
     faq_raw = FAQLoader().load()
     policy_raw = PolicyLoader().load()
+    product_raw = await ProductLoader().load_all()      # nguồn theo PRODUCT_SOURCE (file | service)
 
     # 2. Clean & Chunk
     all_chunks: list[ChunkPayload] = []
@@ -61,8 +63,16 @@ async def run(mode: str = "incremental") -> dict[str, Any]:
             all_chunks.extend(chunks)
             clean_policy_count += 1
 
-    log.info("Đã tạo được tổng cộng %d chunks (FAQ: %d, Policies: %d)",
-             len(all_chunks), clean_faq_count, clean_policy_count)
+    # Clean & chunk Products (1 sản phẩm = 1 chunk; giá/trạng thái chỉ là snapshot, không đưa vào text embed)
+    clean_product_count = 0
+    for r in product_raw:
+        cleaned = clean_record(r)
+        if cleaned:
+            all_chunks.extend(chunk_product(cleaned))
+            clean_product_count += 1
+
+    log.info("Đã tạo được tổng cộng %d chunks (FAQ: %d, Policies: %d, Products: %d)",
+             len(all_chunks), clean_faq_count, clean_policy_count, clean_product_count)
 
     # 3. Index into Qdrant
     target_collection = await indexer.ensure_collection("v1")
@@ -80,6 +90,7 @@ async def run(mode: str = "incremental") -> dict[str, Any]:
         "alias": settings.qdrant_collection,
         "faq_documents": clean_faq_count,
         "policy_documents": clean_policy_count,
+        "product_documents": clean_product_count,
         "total_chunks_indexed": len(all_chunks),
         "total_points_upserted": upserted_count,
     }

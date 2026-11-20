@@ -12,7 +12,7 @@ from app.core.logging import setup_logging
 from app.core.middleware import RequestIdMiddleware
 from app.db.session import create_engine_and_sessionmaker
 from app.integrations.order_client import OrderClient
-from app.integrations.product_client import ProductClient
+from app.integrations.product_source import create_product_client
 from app.services.container import build_services
 from app.services.mock_rag_engine import MockRAGEngine
 
@@ -27,9 +27,14 @@ async def lifespan(app: FastAPI):
 
     db_engine, db_sessionmaker = create_engine_and_sessionmaker()
     redis = Redis.from_url(settings.redis_url, decode_responses=True)   # kết nối lười
-    product_client, order_client = ProductClient(), OrderClient()
+    product_client, order_client = create_product_client(settings), OrderClient()
     close_rag = None
     services = None
+    if settings.product_source == "file":
+        try:
+            log.info("Nguồn sản phẩm: file %s (%d sản phẩm)", settings.product_data_file, product_client.count())
+        except Exception:  # noqa: BLE001
+            log.warning("Không đọc được file sản phẩm %s", settings.product_data_file, exc_info=True)
     try:
         if settings.rag_enabled:
             from app.rag.factory import build_rag_engine

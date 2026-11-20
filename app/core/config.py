@@ -1,6 +1,6 @@
 """Cấu hình ứng dụng. Tên biến khớp 1-1 với .env.example."""
 from functools import lru_cache
-
+from typing import Literal
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -92,6 +92,8 @@ class Settings(BaseSettings):
     product_service_url: str = "http://localhost:8081"
     order_service_url: str = "http://localhost:8082"
     service_http_timeout_seconds: float = 5.0
+    product_source: Literal["file", "service"] = "file"
+    product_data_file: str = "data/products/food.json"
     kafka_bootstrap_servers: str = ""
 
     @property
