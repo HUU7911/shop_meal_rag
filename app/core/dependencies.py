@@ -4,7 +4,8 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 
-from app.core.security import CurrentUser, client_identity, get_current_user
+from app.core.security import CurrentUser, client_identity, client_ip, get_current_user, require_roles
+from app.services.auth_service import AuthService
 from app.services.chat_service import ChatService
 from app.services.container import Services
 from app.services.conversation_service import ConversationService
@@ -20,6 +21,10 @@ def get_rag_engine(request: Request):
 
 def get_services(request: Request) -> Services:
     return request.app.state.services
+
+
+def get_auth_service(request: Request) -> AuthService:
+    return get_services(request).auth
 
 
 def get_chat_service(request: Request) -> ChatService:
@@ -53,7 +58,14 @@ async def enforce_rate_limit(
     await get_services(request).rate_limiter.check(client_identity(request, user))
 
 
+async def enforce_auth_rate_limit(request: Request) -> None:
+    """Giới hạn riêng (chặt hơn chat) cho đăng ký/đăng nhập/làm mới token, tính theo IP -> chống dò mật khẩu."""
+    await get_services(request).auth_rate_limiter.check(f"auth:{client_ip(request)}")
+
+
 CurrentUserDep = Annotated[CurrentUser, Depends(get_current_user)]
+AdminDep = Annotated[CurrentUser, Depends(require_roles("ADMIN"))]
+AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
 ChatServiceDep = Annotated[ChatService, Depends(get_chat_service)]
 ConversationServiceDep = Annotated[ConversationService, Depends(get_conversation_service)]
 HistoryServiceDep = Annotated[HistoryService, Depends(get_history_service)]

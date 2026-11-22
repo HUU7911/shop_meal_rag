@@ -21,10 +21,19 @@ class Settings(BaseSettings):
     jwt_jwks_url: str = ""
     jwt_algorithm: str = "RS256"
     jwt_audience: str = ""
+    # --- Đăng ký / đăng nhập: chính service này cấp JWT ---
+    jwt_secret: SecretStr = SecretStr("")           # khóa ký+kiểm cho HS256/384/512 (>= 32 ký tự)
+    jwt_private_key: SecretStr = SecretStr("")      # PEM khóa riêng để CẤP token khi dùng RS256/ES256
+    jwt_issuer: str = "shop-meal-chatbot"           # claim iss; để trống nếu token do hệ thống ngoài cấp
+    jwt_access_ttl_minutes: int = 30
+    jwt_refresh_ttl_days: int = 14
+    auth_registration_enabled: bool = True
+    auth_rate_limit_per_minute: int = 10            # đăng ký/đăng nhập/refresh, tính theo IP
+    auth_max_failed_logins: int = 5                 # sai quá số lần này thì khóa tạm tài khoản
+    auth_lockout_minutes: int = 15
     trust_gateway_user_header: bool = False
     allow_guest: bool = True
     internal_api_key: SecretStr = SecretStr("")
-
     # MySQL
     mysql_host: str = "localhost"
     mysql_port: int = 3306
@@ -121,6 +130,7 @@ _PLACEHOLDER_PREFIX = "change"
 def validate_production_settings(settings: Settings) -> None:
     """Từ chối khởi động production với cấu hình bảo mật yếu (docs/SECURITY.md)."""
     from app.core.errors import ConfigurationError
+    from app.core.tokens import has_verification_key
 
     if settings.app_env.lower() != "production":
         return
@@ -133,12 +143,13 @@ def validate_production_settings(settings: Settings) -> None:
     weak = [k for k, v in secrets.items() if not v or v.lower().startswith(_PLACEHOLDER_PREFIX)]
     if weak:
         raise ConfigurationError(f"Production: cần đặt giá trị thật cho {', '.join(weak)}.")
-    if not (settings.jwt_public_key or settings.jwt_jwks_url):
-        raise ConfigurationError("Production: cần JWT_PUBLIC_KEY hoặc JWT_JWKS_URL.")
-    if "*" in settings.cors_origin_list:
-        raise ConfigurationError("Production: CORS_ORIGINS không được là '*'.")
-    if not settings.rag_enabled:
-        raise ConfigurationError("Production: RAG_ENABLED phải bật (không dùng MockRAGEngine).")
+    if not has_verification_key(settings):
+        raise ConfigurationError(
+            "Production: cần JWT_SECRET (>= 32 ký tự, khi HS256) hoặc JWT_PUBLIC_KEY/JWT_JWKS_URL/JWT_PRIVATE_KEY."
+        )
+    if settings.jwt_algorithm.upper().startswith("HS") and settings.jwt_secret.get_secret_value().lower().startswith(
+            "change"):
+        raise ConfigurationError("Production: JWT_SECRET đang là giá trị mẫu.")
 
 
 @lru_cache

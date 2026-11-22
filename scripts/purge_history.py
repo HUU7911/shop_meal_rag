@@ -26,7 +26,8 @@ async def main() -> int:
                 soft_deleted_before=now - timedelta(days=SOFT_DELETE_GRACE_DAYS),
                 inactive_before=now - timedelta(days=settings.history_retention_days),
             )
-        log.info("Đã xóa vĩnh viễn %d conversation quá hạn", purged)
+            expired_tokens = await uow.refresh_tokens.delete_expired(now - timedelta(days=SOFT_DELETE_GRACE_DAYS))
+        log.info("Đã xóa vĩnh viễn %d conversation quá hạn và %d refresh token hết hạn", purged, expired_tokens)
         return purged
     finally:
         await engine.dispose()

@@ -95,3 +95,52 @@ async def test_offtopic_question_is_never_glued_to_previous_context():
     for question in ("Giá bitcoin hôm nay", "Viết giúp mình đoạn code python này", "hello nay"):
         pq = await QueryProcessor(None).process(question, hist)
         assert pq.standalone == question and pq.carried_over is None, question
+
+def test_semantic_query_drops_price_and_filler_but_keeps_dish_words():
+    from app.rag.query_processor import semantic_query
+    cases = {
+        "Có trà đào nào dưới 50 nghìn không?": "trà đào",
+        "bún bò huế giá bao nhiêu": "bún bò huế",
+        "Cơm gà xối mỡ còn hàng không?": "Cơm gà xối mỡ",
+        "tra dao nao duoi 50k khong": "tra dao",
+        "cho mình xem món ăn vặt từ 30k đến 50k": "món ăn vặt",
+        "Món cay tối đa 40.000đ": "Món cay",
+        "Có món gì không": "món",
+    }
+    for question, expected in cases.items():
+        assert semantic_query(question) == expected, question
+
+
+def test_semantic_query_never_returns_empty():
+    from app.rag.query_processor import semantic_query
+    assert semantic_query("có không?") == "có không?"
+    assert semantic_query("dưới 50k") == "dưới 50k"
+
+
+def test_semantic_query_keeps_ambiguous_words_that_belong_to_dish_names():
+    from app.rag.query_processor import semantic_query
+    cases = {
+        "Có rau muống xào tỏi nào dưới 50 nghìn không?": "rau muống xào tỏi",
+        "Có bánh bao nào dưới 30k không?": "bánh bao",
+        "bò cuốn lá lốt giá bao nhiêu": "bò cuốn lá lốt",
+        "Có món nào không cay không?": "món không cay",
+        "cơm nhà còn hàng không": "cơm nhà",
+        "món có gia vị cay": "món gia vị cay",
+        "tìm trà đào giá": "trà đào",
+        "giá trà đào bao nhiêu": "trà đào",
+        "Cho tôi xem trà đào": "tôi trà đào",
+    }
+    for question, expected in cases.items():
+        assert semantic_query(question) == expected, question
+
+
+def test_semantic_query_never_damages_any_real_product_name():
+    import json
+    from pathlib import Path
+    from app.rag.query_processor import semantic_query
+    food = Path(__file__).resolve().parents[2] / "data" / "products" / "food.json"
+    for item in json.loads(food.read_text(encoding="utf-8")):
+        name = item["name"]
+        assert semantic_query(name) == name, name
+        assert semantic_query(f"Có {name} nào dưới 50 nghìn không?") == name, name
+        assert semantic_query(f"{name} còn hàng không") == name, name

@@ -90,14 +90,34 @@ _PRICE_COMPARATORS = {("duoi",), ("tren",), ("toi", "da"), ("toi", "thieu"), ("k
                       ("lon", "hon"), ("re", "hon"), ("it", "hon"), ("it", "nhat"), ("tu",), ("den",), ("khoang",)}
 _PRICE_UNITS = {"nghin", "ngan", "k", "tr", "trieu", "d", "dong", "vnd"}
 _NUMBER_TOKEN = re.compile(r"^\d[\d.,]*(?:k|tr|d|vnd|nghin|ngan|trieu)?$")
-# Từ đệm của câu hỏi (không mô tả món). KHÔNG đưa "mon"/"an"/"do": là một phần tên món/danh mục.
-_FILLER = {"co", "khong", "nao", "gi", "la", "bao", "nhieu", "gia", "tien", "cho", "minh", "toi", "xem", "muon",
-           "tim", "shop", "giup", "nhe", "nha", "oi", "voi", "duoc", "con", "hang", "het", "may"}
+# Từ đệm KHÔNG thể là một phần tên món/danh mục. Các từ mơ hồ (tôi/tỏi, bao/bánh bao, la/lá lốt, nha/cơm nhà, gia/gia vị,
+# không/"không cay", còn/het) KHÔNG nằm ở đây mà chỉ bị bỏ khi VỊ TRÍ cho thấy là từ đệm (xem _is_filler):
+# bỏ nhầm một chữ của tên món làm hỏng truy xuất, còn giữ lại một từ đệm chỉ làm điểm rerank giảm nhẹ.
+_FILLER = {"co", "nao", "gi", "cho", "minh", "xem", "muon", "shop", "giup", "nhe", "oi", "duoc", "hang", "tien",
+           "voi"}
+
+
+def _is_filler(plain: list[str], i: int) -> bool:
+    token, nxt = plain[i], plain[i + 1] if i + 1 < len(plain) else None
+    if token in _FILLER:
+        return True
+    return ((token == "khong" and nxt is None)                          # "...không?" cuối câu, khác "món không cay"
+            or (token == "gia" and (nxt is None or nxt in {"bao", "nhieu", "tien", "nao"}      # khác "gia vị"
+                                    or ("bao", "nhieu") in zip(plain, plain[1:])))             # "giá trà đào bao nhiêu"
+            or (token == "bao" and nxt == "nhieu")                      # khác "bánh bao"
+            or (token == "nhieu" and i > 0 and plain[i - 1] == "bao")
+            or (token in {"con", "het"} and nxt == "hang")              # "còn/hết hàng"
+            or (token == "tim" and i == 0))                             # "tìm ..." đầu câu, khác "tim heo"
 
 
 def semantic_query(question: str) -> str:
     """Phần NỘI DUNG của câu hỏi sản phẩm: bỏ điều kiện giá, từ hỏi tồn kho và từ đệm.
-    "Có trà đào nào dưới 50 nghìn không?" -> "trà đào". Không còn gì sau khi bỏ -> trả câu gốc."""
+
+    "Có trà đào nào dưới 50 nghìn không?" -> "trà đào". Không còn gì sau khi bỏ -> trả câu gốc.
+    Vì sao: cross-encoder chấm câu có điều kiện giá rất thấp dù món đúng (đo thực tế: câu trên 0.024, còn "trà đào"
+    0.989) nên món đúng bị loại ở ngưỡng. Giá/tồn kho không cần cho truy xuất: product_search lọc theo giá THẬT và lấy
+    trạng thái live. Ưu tiên giữ chữ khi không chắc để không làm mất từ trong tên món (tỏi, bánh bao, lá lốt...).
+    """
     original = question.split()
     plain = [strip_accents(t.lower()).strip("?!.,;:()\"'") for t in original]
     drop: set[int] = set()
@@ -109,7 +129,7 @@ def semantic_query(question: str) -> str:
                 if i + n + 1 < len(plain) and plain[i + n + 1] in _PRICE_UNITS:
                     drop.add(i + n + 1)
     for i, token in enumerate(plain):
-        if _NUMBER_TOKEN.match(token) or token in _FILLER or (token in _PRICE_UNITS and i - 1 in drop):
+        if _NUMBER_TOKEN.match(token) or _is_filler(plain, i) or (token in _PRICE_UNITS and i - 1 in drop):
             drop.add(i)
     kept = [o for i, o in enumerate(original) if i not in drop]
     return " ".join(kept).strip("?!.,; ") or question

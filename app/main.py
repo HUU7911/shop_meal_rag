@@ -15,6 +15,7 @@ from app.integrations.order_client import OrderClient
 from app.integrations.product_source import create_product_client
 from app.services.container import build_services
 from app.services.mock_rag_engine import MockRAGEngine
+from app.core import tokens
 
 log = logging.getLogger("app.main")
 
@@ -24,6 +25,8 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
     setup_logging(settings.log_level)
     validate_production_settings(settings)
+    if not tokens.can_issue(settings):
+        log.warning("Chưa cấu hình khóa ký JWT (JWT_SECRET hoặc JWT_PRIVATE_KEY): /auth/register và /auth/login sẽ lỗi")
 
     db_engine, db_sessionmaker = create_engine_and_sessionmaker()
     redis = Redis.from_url(settings.redis_url, decode_responses=True)   # kết nối lười

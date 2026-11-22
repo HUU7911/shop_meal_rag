@@ -18,8 +18,7 @@ from qdrant_client import AsyncQdrantClient, models
 from app.core.config import get_settings
 from app.embedding.embedding_service import EmbeddingService
 from app.embedding.text_normalizer import normalize_text
-from app.ingestion.payload import (INDEXED_FIELDS, ChunkPayload, ContentType, content_hash, now_iso,
-                                   point_id)
+from app.ingestion.payload import (INDEXED_FIELDS, ChunkPayload, ContentType, content_hash, now_iso, point_id)
 
 DATA = Path(__file__).resolve().parent.parent / "data"
 KB_VERSION = "v1"

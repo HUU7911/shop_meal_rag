@@ -3,9 +3,10 @@
     python -m eval.run_eval --mode intent                  # không cần hạ tầng: guardrail + router + luật
     python -m eval.run_eval --mode retrieval --k 4         # cần Qdrant + model embedding (KHÔNG cần LLM)
     python -m eval.run_eval --mode full --judge            # cần Qdrant + LLM; --judge chấm độ phủ ý bằng LLM
-Tuỳ chọn so sánh cấu hình:  --no-rerank  --no-hybrid  --limit N  --golden path.jsonl
+Tuỳ chọn so sánh cấu hình:  --no-rerank  --no-hybrid  --limit N  --golden path.jsonl  --tag nhãn
 
-Mỗi lần chạy ghi eval/reports/<timestamp>.json kèm cấu hình để so trước/sau.
+Mỗi lần chạy ghi eval/reports/<mode>[-<tag>]-<timestamp>.json kèm cấu hình và tên golden set để so trước/sau.
+Truy xuất sản phẩm dùng semantic_query (bỏ điều kiện giá/từ đệm) giống hệt RAGEngine.
 Hạn chế đã biết: mode intent bỏ qua rewrite nên với câu có history chỉ đánh giá câu gốc;
 mode full không có Product/Order Service thật nên câu sản phẩm/đơn hàng có thể ra UPSTREAM_DOWN.
 """
@@ -22,18 +23,38 @@ from app.core.config import get_settings
 from app.core.errors import GuardrailBlocked
 from app.rag.guardrails import Guardrails
 from app.rag.intent_router import IntentRouter
-from app.rag.query_processor import QueryProcessor
+from app.rag.query_processor import QueryProcessor, semantic_query
 from app.rag.types import HistoryTurn, RAGRequest, RAGUser
 from app.rag.utils import apply_score_threshold
-from eval.metrics import best_rerank_scores, threshold_sweep, top_rerank_scores
 from app.schemas.chat_schema import Intent
+from eval.metrics import best_rerank_scores, threshold_sweep, top_rerank_scores
 
 ROOT = Path(__file__).resolve().parent
 RETRIEVAL_TYPES = {"FAQ_POLICY": ["FAQ", "POLICY", "DOCUMENT"], "PRODUCT_SEARCH": ["PRODUCT"], "PRODUCT_DETAIL": ["PRODUCT"]}
 
 
 def load_golden(path: Path, limit: int | None) -> list[dict]:
-    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    """Nạp JSONL; lỗi báo kèm số dòng (vd. hai bản ghi dính trên một dòng) thay vì traceback khó đọc."""
+    rows, errors, seen = [], [], {}
+    for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError as exc:
+            hint = " (có thể hai bản ghi bị dính trên một dòng)" if exc.msg.startswith("Extra data") else ""
+            errors.append(f"{path.name}:{number}: JSON lỗi — {exc.msg} ở cột {exc.colno}{hint}")
+            continue
+        missing = [k for k in ("id", "question", "expected_intent") if not row.get(k)]
+        if missing:
+            errors.append(f"{path.name}:{number}: thiếu trường {missing}")
+        elif row["id"] in seen:
+            errors.append(f"{path.name}:{number}: id '{row['id']}' trùng với dòng {seen[row['id']]}")
+        else:
+            seen[row["id"]] = number
+        rows.append(row)
+    if errors:
+        raise SystemExit("Golden set không hợp lệ:\n" + "\n".join(errors[:20]))
     return rows[:limit] if limit else rows
 
 
@@ -91,16 +112,24 @@ async def eval_retrieval(rows: list[dict], settings, k: int) -> dict:
     """
     from app.rag.factory import build_retrieval_stack
     client, _embedder, retriever, reranker = await build_retrieval_stack(settings)
+    try:
+        await retriever.verify()        # dừng sớm nếu collection không khớp model/kích thước đang chạy
+    except Exception:
+        await client.close()
+        raise
     qp, drop_rrf = QueryProcessor(None), not settings.llm_enabled
 
     async def run(r: dict):
         pq = await qp.process(r["question"], history_of(r))
+        types = RETRIEVAL_TYPES.get(r["expected_intent"])
+        is_product = types == ["PRODUCT"]               # giống RAGEngine: sản phẩm dùng phần nội dung, không kèm giá
+        query = semantic_query(pq.standalone) if is_product else pq.standalone
+        filters = pq.filters if is_product else {k: v for k, v in pq.filters.items() if k != "category"}
         t0 = time.perf_counter()
-        hits = await retriever.search(pq.standalone, content_types=RETRIEVAL_TYPES.get(r["expected_intent"]),
-                                      filters=pq.filters, top_k=settings.retrieval_top_k)
+        hits = await retriever.search(query, content_types=types, filters=filters, top_k=settings.retrieval_top_k)
         t1 = time.perf_counter()
         limit = getattr(settings, "rerank_candidates", 0)
-        hits = (await asyncio.to_thread(reranker.rerank, pq.standalone, hits[:limit] if limit else hits, k)
+        hits = (await asyncio.to_thread(reranker.rerank, query, hits[:limit] if limit else hits, k)
                 if reranker.enabled else hits[:k])
         t2 = time.perf_counter()
         kept, _dropped = apply_score_threshold(hits, settings.retrieval_score_threshold, drop_unscored_rrf=drop_rrf)
@@ -226,6 +255,7 @@ def main() -> None:
     ap.add_argument("--judge", action="store_true")
     ap.add_argument("--no-rerank", action="store_true")
     ap.add_argument("--no-hybrid", action="store_true")
+    ap.add_argument("--tag", help="nhãn ghi vào báo cáo và tên file (vd. product-fix, no-rerank)")
     args = ap.parse_args()
 
     settings = get_settings().model_copy(update={
@@ -239,13 +269,17 @@ def main() -> None:
     else:
         metrics = asyncio.run(eval_full(rows, settings, args.k, args.judge))
 
-    report = {"timestamp": datetime.now().isoformat(timespec="seconds"), "mode": args.mode,
+    now = datetime.now()
+    report = {"timestamp": now.isoformat(timespec="seconds"), "mode": args.mode, "tag": args.tag,
+              "golden": args.golden.name, "n_rows": len(rows),
               "config": {"embedding_model": settings.embedding_model, "hybrid": settings.hybrid_enabled,
                          "rerank": settings.rerank_enabled, "rerank_model": settings.rerank_model,
                          "top_k": settings.retrieval_top_k, "rerank_top_n": settings.rerank_top_n,
-                         "threshold": settings.retrieval_score_threshold, "llm_model": settings.llm_model},
+                         "threshold": settings.retrieval_score_threshold, "llm_model": settings.llm_model,
+                         "collection": settings.qdrant_collection},
               "metrics": metrics}
-    out = ROOT / "reports" / f"{args.mode}-{datetime.now():%Y%m%d-%H%M%S}.json"
+    label = f"-{re.sub(r'[^A-Za-z0-9_.]+', '-', args.tag).strip('-')}" if args.tag else ""
+    out = ROOT / "reports" / f"{args.mode}{label}-{now:%Y%m%d-%H%M%S}.json"
     out.parent.mkdir(exist_ok=True)
     out.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({k: v for k, v in metrics.items() if k not in ("details",)}, ensure_ascii=False, indent=2))

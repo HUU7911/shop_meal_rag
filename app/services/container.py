@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from app.core.rate_limit import RateLimiter
 from app.db.unit_of_work import make_uow_factory
+from app.services.auth_service import AuthService
 from app.services.chat_service import ChatService
 from app.services.conversation_service import ConversationService
 from app.services.feedback_service import FeedbackService
@@ -20,6 +21,8 @@ class Services:
     health: HealthService
     ingestion: IngestionService
     rate_limiter: RateLimiter
+    auth: AuthService
+    auth_rate_limiter: RateLimiter
 
 
 def build_services(settings, *, db_engine, session_factory, redis, rag_engine) -> Services:
@@ -37,4 +40,6 @@ def build_services(settings, *, db_engine, session_factory, redis, rag_engine) -
         health=HealthService(settings, db_engine=db_engine, redis=redis),
         ingestion=IngestionService(uow_factory),
         rate_limiter=RateLimiter(redis, settings.rate_limit_per_minute),
+        auth=AuthService(uow_factory, settings),
+        auth_rate_limiter=RateLimiter(redis, settings.auth_rate_limit_per_minute),
     )
